@@ -1,0 +1,147 @@
+body {
+background-image: url(../images/korean_folkloreBG.jpg);	
+background-repeat: repeat-x;	
+background-color : #fff;
+margin : 0;
+padding : 0;
+font-family:Arial, Helvetica, sans-serif;
+font-size : 13px;
+color : #444;
+line-height: 1.4;
+}
+
+td {vertical-align: top;}
+
+table.form {
+	width: 100%;
+	background-color: #fff;
+}
+.form td {background-color: #f2f2f2; padding: 5px 5px;}
+
+#wrapper {
+width:960px;
+min-height:400px;
+margin:0 auto 0 0;
+}
+
+#topWrapper {
+width:100%;
+height:155px;
+background-image: url(../images/korean_folkloreHeader.jpg);	
+background-repeat: no-repeat;
+}
+
+#mainArea {
+width:960px;
+border:none;
+padding:0px;
+margin:20px 0px;
+border-collapse:collapse;
+}
+table, th, td {
+padding:0px;
+margin:0px;
+border:none;
+text-align:left;
+vertical-align:top;
+
+}
+
+#menu {
+width:250px;
+min-height:450px;
+}
+
+#contentArea {
+width:auto;
+margin:15px;
+min-height:450px;
+display:block;
+clear:both;
+}
+
+#footer {
+min-height:50px;
+padding:15px;
+}
+
+a {
+color:#1a2d7f;
+text-decoration:none;
+}
+
+a.delete-link {
+	color:red;
+	margin-left:30px;
+	text-decoration:none;
+}
+
+h1 {
+font-size:28px;
+color:#2d2d2d;
+padding:0px;
+margin:0px 0px 15px 0px;
+line-height:29px;
+}
+
+h2 {
+font-size:24px;
+color:#3d3d3d;
+padding:0px;
+margin:0px 0px 15px 0px;
+line-height:26px;
+}
+
+h2 a {
+font-size:24px;
+color:#3d3d3d;
+padding:0px;
+margin:0px 0px 15px 0px;
+line-height:26px;
+text-decoration:none;
+}
+
+h2 a:hover {
+color:#0033CC;
+text-decoration:underline;
+
+}
+
+
+h3 {
+font-size:18px;
+color:#1a2d7f;
+padding:0px;
+margin:0px 0px 10px 0px;
+line-height:20px;
+}
+
+.small-label{
+	font-size:12px;
+	color:pink;
+}
+/*--------- [  formStyle ] -------------*/
+
+
+
+.formStyle {
+border:2px solid #999;
+width:100%;
+font-size:13px;
+}
+.formStyle td {
+	background:#f2f2f2; 
+	padding:5px 5px;
+}
+label {
+font-size:15px;
+font-weight:bold;
+
+}
+.form_title {
+font-size:15px;font-weight:bold;
+}
+
+.unnamed1 {  font-size: 13px; font-style: normal; line-height: normal; font-variant: normal; }
+
+.btnSubmit {padding: 5px 8px;}

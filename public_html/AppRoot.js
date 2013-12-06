@@ -2,7 +2,7 @@ var KFA = {
     el: "body",
     InputForm: {},
     Map: {},
-    ResultsList: {},
+    ResultList: {},
     AppRoot: Backbone.View.extend({
         render: function () {
             var search = new KFA.InputForm.Query();

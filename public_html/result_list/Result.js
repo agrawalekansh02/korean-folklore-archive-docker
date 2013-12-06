@@ -1,4 +1,4 @@
-KFA.ResultsList.Result = Backbone.Model.extend({
+KFA.ResultList.Result = Backbone.Model.extend({
     defaults: {
         projectTitle: '',
         date: null,

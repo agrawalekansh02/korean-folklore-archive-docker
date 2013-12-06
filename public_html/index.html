@@ -23,11 +23,104 @@ and open the template in the editor.
         <script src="bower_components/mustache/mustache.js"></script>
         <script src="bower_components/openlayers/build/OpenLayers.js"></script>
 
+        <!-- Application -->
+        <script src="AppRoot.js"></script>
+        <!-- Input Form -->
         <script src="input_form/InputForm.js"> </script>
         <script src="input_form/Query.js"></script>
 
         <script type="text/template" id="kfa-input-form-template">
-
+            <form>
+                <fieldset>
+                    <legend>Collector</legend>
+                    <!-- TODO: gender as multiselect -->
+                    <label for="collector-occupation">Occupation</label>
+                    <input type="text" name="collector-occupation" class="collector-occupation" />
+                    <label for="collector-age">Age</label>
+                    <input type="text" name="collector-age" class="collector-age" />
+                    <!-- TODO: languages as multiselect -->
+                </fieldset>
+                <fieldset>
+                    <legend>Consultant</legend>
+                    <!-- TODO: gender as multiselect -->
+                    <label for="consultant-occupation">Occupation</label>
+                    <input type="text" name="consultant-occupation" class="consultant-occupation" />
+                    <label for="consultant-age">Age</label>
+                    <input type="text" name="consultant-age" class="consultant-age" />
+                    <!-- TODO: languages as multiselect -->
+                </fieldset>
+                <fieldset>
+                    <legend>Context</legend>
+                    <label for="context-name">Name</label>
+                    <input type="text" name="context-name" class="context-name" />
+                    <label for="context-event-type">Event Type</label>
+                    <select name="context-event-type" class="context-event-type">
+                        <option value="birthday">Birthday</option>
+                        <option value="Seasonal/Holiday">Seasonal/Holiday</option>
+                        <option value="Wedding">Wedding</option>
+                        <option value="Funeral">Funeral</option>
+                        <option value="Graduation">Graduation</option>
+                        <option value="Other Celebration">Other Celebration</option>
+                        <option value="Oral History">Oral History</option>
+                        <option value="Folk Speech/Gesture">Folk Speech/Gesture</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Song">Song</option>
+                        <option value="Dance">Dance</option>
+                        <option value="Other Performance">Other Performance</option>
+                        <option value="Architecture">Architecture</option>
+                        <option value="Costume/Clothing">Costume/Clothing</option>
+                        <option value="Body Art or Adornment">Body Art or Adornment</option>
+                        <option value="Folk Art or Craft">Folk Art or Craft</option>
+                        <option value="Cooking">Cooking</option>
+                        <option value="Other Material Culture">Other Material Culture</option>
+                        <option value="General Observation">General Observation</option>
+                    </select>
+                    <label for="context-time-of-day">Time of Day</label>
+                    <select name="context-time-of-day">
+                        <option value="morning">Morning</option>
+                        <option value="afternoon">Afternoon</option>
+                        <option value="evening">Evening</option>
+                        <option value="night">Night</option>
+                    </select>
+                    <!-- TODO: date span for collection date -->
+                    <label for="collection-date">Date</label>
+                    <label for="collection-weather">Weather</label>
+                    <input type="text" name="collection-weather" class="collection-weather" />
+                    <label for="collection-language">Language</label>
+                    <input type="text" name="collection-language" class="collection-language" />
+                    <label for="collection-place-type">Place Type</label>
+                    <select name="collection-place-type" class="collection-place-type">
+                        <option value="business">Business</option>
+                        <option value="residence">Residence</option>
+                        <option value="public">Public Place</option>
+                    </select>
+                    <label for="collection-others-present">Number of Others Present</label>
+                    <input type="text" name="collection-others-present" class="collection-others-present" />
+                    <label for="collection-method">Collection Method</label>
+                    <select name="collection-method" class="collection-method">
+                        <option value="tape">Tape Recorder</option>
+                        <option value="video">Video Camera</option>
+                        <option value="camera">Still Camera</option>
+                        <option value="notes">Notes</option>
+                    </select>
+                    <label for="collection-description">Description</label>
+                    <input type="text" name="collection-description" class="collection-description" />
+                </fieldset>
+                <fieldset>
+                    <legend>Data</legend>
+                    <label for="project-title">Project Title</label>
+                    <input type="text" name="project-title" class="project-title" />
+                    <label for="media">Media</label>
+                    <select name="media" class="media">
+                        <option value="fieldnotes">Field notes</option>
+                        <option value="images">Images</option>
+                        <option value="video">Video</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                    <label for="description">Description</label>
+                    <input type="text" name="description" class="description" />
+                </fieldset>
+            </form>
         </script>
 
         <!-- Map -->
@@ -36,7 +129,12 @@ and open the template in the editor.
 
         <!-- Search Results -->
         <script type="text/template" id="kfa-summary-item-template">
-
+            <tr>
+                <td class="project-title">{{projectTitle}}</td>
+                <td class="date">{{date}}</td>
+                <td class="city">{{city}}</td>
+                <td class="description">{{description}}</td>
+            </tr>
         </script>
         <script src="result_list/ResultList.js"></script>
         <script src="result_list/ResultCollection.js"></script>

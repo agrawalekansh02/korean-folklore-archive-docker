@@ -36,21 +36,34 @@
             <form action="#" class="search-form">
                 <fieldset>
                     <legend>Collector</legend>
-                    <!-- TODO: gender as multiselect -->
+                    <label for="collector-gender">Gender</label>
+                    <select name="collector-gender" class="collector-gender">
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                    </select>
                     <label for="collector-occupation">Occupation</label>
                     <input type="text" name="collector-occupation" class="collector-occupation" />
                     <label for="collector-age">Age</label>
                     <input type="text" name="collector-age" class="collector-age" />
                     <!-- TODO: languages as multiselect -->
+                    <label for="collector-language">Languages Spoken</label>
+                    <input type="text" name="collector-language" class="collector-language" />
                 </fieldset>
                 <fieldset>
                     <legend>Consultant</legend>
-                    <!-- TODO: gender as multiselect -->
+                    <label for="consultant-gender">Gender</label>
+                    <select name="consultant-gender" class="consultant-gender">
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                    </select>
                     <label for="consultant-occupation">Occupation</label>
                     <input type="text" name="consultant-occupation" class="consultant-occupation" />
                     <label for="consultant-age">Age</label>
                     <input type="text" name="consultant-age" class="consultant-age" />
-                    <!-- TODO: languages as multiselect -->
+                    <label for="collector-language">Languages Spoken</label>
+                    <input type="text" name="collector-language" class="collector-language" />
+                    <label for="consultant-language">Languages Spoken</label>
+                    <input type="text" name="consultant-language" class="consultant-language" />
                 </fieldset>
                 <fieldset>
                     <legend>Context</legend>

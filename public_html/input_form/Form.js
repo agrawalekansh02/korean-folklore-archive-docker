@@ -10,20 +10,17 @@ KFA.InputForm.Form = Backbone.View.extend({
 
     render: function () {
         this.$el.append(Mustache.compile(this.template));
-        // set multiselects
-//        this.$el.find(".context-event-type").multiselect().multiselect("uncheckAll");
-//        this.$el.find(".context-time-of-day").multiselect();
         this._addMultiSelects([
+            '.collector-gender', '.consultant-gender',
             ".context-event-type", ".context-time-of-day", ".collection-method",
             '.collection-place-type', '.media'
         ]);
-        // clone form
-        // add to page
         return this;
     },
 
-    _updateModel: function () {
+    _updateModel: function ($e) {
         // 
+        $e.preventDefault();
     },
 
     events: {

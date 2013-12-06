@@ -3,10 +3,23 @@
     Author     : dave
 */
 
-#hello {
-    background: #ff0099;
+#search-wrapper {
+    position: absolute;
+    width: 20%;
+    top: 10px;
+    left: 50px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.75);
 }
 
-#hello {
-    color: white;
+input[type=text], select {
+    display: inline-block;
+    float: left;
+}
+
+label {
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 150px;
 }

@@ -8,9 +8,10 @@ var KFA = {
             var search = new KFA.InputForm.Query();
             // create search form
             var searchForm = new KFA.InputForm.Form({
-                model: search
+                model: search,
+                el: "#search-wrapper"
             });
-            $("#search-wrapper").append(searchForm.render());
+            searchForm.render();
 
             var map = new KFA.Map.Map({
                 el: "#map"
@@ -22,9 +23,10 @@ var KFA = {
             map.addLayer(resultLayer);
 
             var resultList = new KFA.ResultList.ResultList({
-                model: search
+                model: search,
+                el: "#result-list-wrapper"
             });
-            $("#result-list-wrapper").append(resultList.render());
+            resultList.render();
         }
     })
 };

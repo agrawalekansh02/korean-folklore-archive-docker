@@ -6,10 +6,11 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Korean/Korean-American Folklore Archive</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
 
+        <link rel="stylesheet" type="text/css" href="app_root.css" />
         <link rel="stylesheet" type="text/css" href="input_form/input_form.css" />
         <link rel="stylesheet" type="text/css" href="map/map.css" />
         <link rel="stylesheet" type="text/css" href="result_list/result_list.css" />
@@ -21,14 +22,12 @@ and open the template in the editor.
         <script src="bower_components/underscore/underscore-min.js"></script>
         <script src="bower_components/backbone/backbone-min.js"></script>
         <script src="bower_components/mustache/mustache.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <script src="bower_components/openlayers/build/OpenLayers.js"></script>
 
         <!-- Application -->
         <script src="AppRoot.js"></script>
         <!-- Input Form -->
-        <script src="input_form/InputForm.js"> </script>
-        <script src="input_form/Query.js"></script>
-
         <script type="text/template" id="kfa-input-form-template">
             <form>
                 <fieldset>
@@ -123,9 +122,13 @@ and open the template in the editor.
             </form>
         </script>
 
+        <script src="input_form/Form.js"> </script>
+        <script src="input_form/Query.js"></script>
+
+
         <!-- Map -->
         <script src="map/Map.js"></script>
-        <script src="map/ResultLayer"></script>
+        <script src="map/ResultLayer.js"></script>
 
         <!-- Search Results -->
         <script type="text/template" id="kfa-summary-item-template">
@@ -143,6 +146,21 @@ and open the template in the editor.
 
     </head>
     <body>
-        <div>TODO write content</div>
+
+        <div id="search-wrapper"></div>
+        <div id="map"></div>
+        <div id="result-list-wrapper">
+            <table id="result-list">
+                <thead>
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Date</th>
+                        <th>City</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="search-results"></tbody>
+            </table>
+        </div>
     </body>
 </html>

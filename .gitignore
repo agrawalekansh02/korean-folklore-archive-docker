@@ -1,0 +1,16 @@
+# Mac files
+.DS_Store
+
+# Vim
+*.swp
+
+# NetBeans
+nbproject
+
+# Bower
+public_html/bower_components
+
+# Project-specific (because we are using SCSS)
+*.css
+public_html/libs
+

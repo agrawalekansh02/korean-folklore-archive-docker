@@ -8,13 +8,15 @@ KFA.InputForm.Form = Backbone.View.extend({
         }
     },
 
+    multiSelectFields: [
+        '.collector-gender', '.consultant-gender',
+        ".context-event-type", ".context-time-of-day", ".collection-method",
+        '.collection-place-type', '.media'
+    ],
+
     render: function () {
         this.$el.append(Mustache.compile(this.template));
-        this._addMultiSelects([
-            '.collector-gender', '.consultant-gender',
-            ".context-event-type", ".context-time-of-day", ".collection-method",
-            '.collection-place-type', '.media'
-        ]);
+        this._addMultiSelects(this.multiSelectFields);
         return this;
     },
 
@@ -29,53 +31,60 @@ KFA.InputForm.Form = Backbone.View.extend({
         return returnable;
     },
 
-    _updateModel: function ($e) {
-        var get = function ($el) { this.$el.find($el).val(); },
-            newData = {
-                collector_gender: this.getMultipleResultsFrom(".collector-gender"), 
-                collector_occupation: get(".collector-gender"),
-                collector_age: get(".collector-age"),
-                collector_languages_spoken: get(".collector-languages-spoken"),
-                // consultant
-                consultant_gender: this.getMultipleResultsFrom(".consultant-gender"),
-                consultant_occupation: get(".consultant-occupation"),
-                consultant_languages_spoken: get(".consultant-languages-spoken"),
-                consultant_city: get(".consultant-city"),
-                consultant_immigration_status: get(".consultant-immigration-status"),
-
-                // context
-                context_name: get(".context-name"),
-                context_event_type: get(".context-event-type"),
-                collection_time_of_day: get(".collection-time-of-day"),
-                collection_date: get(".collection-date"),
-                collection_weather: get(".collection-weather"),
-                collection_language: get(".collection-language"),
-                collection_place_type: this.getMultipleResultsFrom(".collection-place-type"),
-                collection_others_present: get(".collection-others-present"), // note that NULL means it is not present
-                collection_method : this.getMultipleValuesFrom(".collection-method"),
-                collection_description: get(".collection-description"),
-
-                // field data
-                project_title: get(".project-title"),
-                media: this.getMultipleValuesFrom(".media"),
-                description: get(".description") 
-            };
-        var updateData = {};
-        for (var i in newData) {
-            var field = newData[i];
-            if (field == null) {
-
-            } else if (typeof field === 'string') {
-                if (field !== '') updateData[i] = field;
-            } else if (typeof field === 'array') {
-                if (field !== []) updateData[i] = field;
-            } else if (typeof field == 'object') {
-                if (field != {}) updateData[i] = field;
-            } else if (typeof field === 'Number') {
-                updateData[i] = field;
+    getValuesFromForm: function ($field) {
+        var value = null;
+        if (this.multiSelectFields.indexOf($field) !== -1) {
+            var valuesFromMultiSelect = this.getMultipleValuesFrom(this.$el.find($field));
+            if (valuesFromMultiSelect.length === 0) value = null;
+        } else {
+            var el = this.$el.find($field),
+                key = $field.replace('.', '').replace('-', '_'),
+                tagName = el.prop('tagName'),
+                type = el.attr('type')
+            ;
+            switch (tagName) {
+                case 'INPUT':
+                    switch (type) {
+                        case 'text':
+                            value = (el.val() !== "") ? el.val() : null;
+                            break;
+                        case 'checkbox':
+                            value = (el.is(":checked"));
+                            break;
+                    }
+                    break; // end checking if the item is an <input>
             }
         }
-        // Then update object
+        return value;
+    },
+
+    _updateModel: function ($e) {
+        var newData = {},
+            fields = [
+                // collector
+                '.collector-gender', '.collector-occupation', '.collector-age',
+                '.collector-language',
+                // Consulant
+                '.consultant-gender', '.consultant-occupation', '.consultant-age',
+                '.consultant-language',
+                // Context
+                '.context-name', '.context-event-type', '.context-time-of-day',
+                '.collection-date', '.collection-weather', '.collection-language',
+                '.collection-place-type', '.collection-others-present',
+                '.collection-method', '.collection-description',
+                // Data
+                '.project-title', '.media', '.description'
+            ];
+        
+        for (var i = 0; i < fields.length; i++) {
+            var value = this.getValuesFromForm(fields[i]);
+            if (value !== null) {
+                newData[fields[i]] = value;
+            }
+        }
+
+        // Then update model
+
         $e.preventDefault();
     },
 

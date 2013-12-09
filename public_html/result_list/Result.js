@@ -1,9 +1,11 @@
 KFA.ResultList.Result = Backbone.Model.extend({
-    defaults: {
-        projectTitle: '',
-        date: null,
-        city: '',
-        description: ''
+    defaults: function () {
+        return {
+            projectTitle: '',
+            date: null,
+            city: '',
+            description: ''
+        };
     }
 });
 

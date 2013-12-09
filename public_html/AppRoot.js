@@ -22,7 +22,7 @@ var KFA = {
             });
             map.addLayer(resultLayer);
 
-            var resultList = new KFA.ResultList.ResultList({
+            var resultList = new KFA.ResultList.List({
                 model: search,
                 el: "#result-list-wrapper"
             });

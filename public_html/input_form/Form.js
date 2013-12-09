@@ -84,6 +84,8 @@ KFA.InputForm.Form = Backbone.View.extend({
         }
 
         // Then update model
+        this.model.clear();
+        this.model.set(newData);
 
         $e.preventDefault();
     },

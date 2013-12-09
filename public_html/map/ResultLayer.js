@@ -1,4 +1,5 @@
 KFA.Map.ResultLayer = Backbone.View.extend({
+
     initialize: function ($options) {
         // TODO: add stylemap
         this._layer = new OpenLayers.Layer.Vector("Search Results");
@@ -11,6 +12,13 @@ KFA.Map.ResultLayer = Backbone.View.extend({
     },
 
     _searchResultsChanged: function () {
+        this._layer.removeAllFeatures();
+
+        // Don't query if the model is now empty
+        if (_.isEqual(this.model.toJSON(), {})) {
+            return;
+        }
+
         $.get("search/search.php", this.model.toJSON(), this._refreshLayer, "json");
     }
 });

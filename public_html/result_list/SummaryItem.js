@@ -1,7 +1,9 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+KFA.ResultList.SummaryItem = Backbone.View.extend({
 
+    template: $("#kfa-summary-item-template").html(),
 
+    render: function () {
+        return Mustache.render(this.template, this.model.toJSON());
+    }
+
+});

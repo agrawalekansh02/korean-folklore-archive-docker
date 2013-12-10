@@ -15,7 +15,7 @@ KFA.Map.ResultLayer = Backbone.View.extend({
         this._layer.removeAllFeatures();
 
         // Don't query if the model is now empty
-        if (_.isEqual(this.model.toJSON(), {})) {
+        if (_.isEmpty(this.model.toJSON())) {
             return;
         }
 

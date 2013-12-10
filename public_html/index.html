@@ -71,25 +71,34 @@
                     <input type="text" name="context-name" class="context-name" />
                     <label for="context-event-type">Event Type</label>
                     <select name="context-event-type" title="context-event-type" class="context-event-type">
-                        <option value="birthday">Birthday</option>
-                        <option value="Seasonal/Holiday">Seasonal/Holiday</option>
-                        <option value="Wedding">Wedding</option>
-                        <option value="Funeral">Funeral</option>
-                        <option value="Graduation">Graduation</option>
-                        <option value="Other Celebration">Other Celebration</option>
-                        <option value="Oral History">Oral History</option>
-                        <option value="Folk Speech/Gesture">Folk Speech/Gesture</option>
-                        <option value="Drama">Drama</option>
-                        <option value="Song">Song</option>
-                        <option value="Dance">Dance</option>
-                        <option value="Other Performance">Other Performance</option>
-                        <option value="Architecture">Architecture</option>
-                        <option value="Costume/Clothing">Costume/Clothing</option>
-                        <option value="Body Art or Adornment">Body Art or Adornment</option>
-                        <option value="Folk Art or Craft">Folk Art or Craft</option>
-                        <option value="Cooking">Cooking</option>
-                        <option value="Other Material Culture">Other Material Culture</option>
-                        <option value="General Observation">General Observation</option>
+                        <optgroup label="Celebration">
+                            <option value="Birthday">Birthday</option>
+                            <option value="Seasonal/Holiday">Holiday</option>
+                            <option value="Wedding">Wedding</option>
+                            <option value="Funeral">Funeral</option>
+                            <option value="Graduation">Graduation</option>
+                            <option value="Other Celebration">Other</option>
+                        <optgroup>
+                        <optgroup label="Performance">
+                            <option value="Oral History">Oral History</option>
+                            <option value="Storytelling">Storytelling</option>
+                            <option value="Folk Speech/Gesture">Folk Speech/Gesture</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Song">Song</option>
+                            <option value="Dance">Dance</option>
+                            <option value="Other Performance">Other</option>
+                        </optgroup>
+                        <optgroup label="Material Culture">
+                            <option value="Architecture">Architecture</option>
+                            <option value="Costume/Clothing">Costume/ Clothing</option>
+                            <option value="Body Art or Adornment">Body Art or Adornment</option>
+                            <option value="Folk Art or Craft">Folk Art or Craft</option>
+                            <option value="Cooking">Cooking</option>
+                            <option value="Other Material Culture">Other</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="General Observation">General Observation</option>
+                        </optgroup>
                     </select>
                     <label for="context-time-of-day">Time of Day</label>
                     <select name="context-time-of-day" class="context-time-of-day">

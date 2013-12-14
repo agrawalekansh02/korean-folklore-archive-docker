@@ -1,14 +1,21 @@
 KFA.Map.ResultLayer = Backbone.View.extend({
 
     initialize: function ($options) {
-        // TODO: add stylemap
+        var style = new OpenLayers.StyleMap({
+            pointRadius : '5',
+            fillColor : 'red',
+            strokeColor: 'red',
+            fillOpacity: 0.5
+        });
         this._layer = new OpenLayers.Layer.Vector("Search Results", {
             strategies: [
                 new OpenLayers.Strategy.Cluster()
-            ]
+            ],
+            styleMap: style
         });
         this._format = new VC.SearchResultsFormat();
         this.listenTo(this.model, "change", this._searchResultsChanged);
+        // TODO: add select control
     },
 
     _refreshLayer: function ($data) {

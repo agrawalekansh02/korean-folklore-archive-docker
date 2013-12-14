@@ -23,6 +23,7 @@
     "jquery-ui-multiselect" : "git@github.com:ehynds/jquery-ui-multiselect-widget.git",
     "openlayers" : "~2.13",
     "backbone" : "~1.1.0",
-    "mustache": "~0.7.3"
+    "mustache": "~0.7.3",
+    "vc" : "git@bitbucket.org:uclacdh/viewcomponents.git"
   }
 }

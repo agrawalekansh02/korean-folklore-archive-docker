@@ -2,13 +2,17 @@ KFA.Map.ResultLayer = Backbone.View.extend({
 
     initialize: function ($options) {
         // TODO: add stylemap
-        this._layer = new OpenLayers.Layer.Vector("Search Results");
+        this._layer = new OpenLayers.Layer.Vector("Search Results", {
+            strategies: [
+                new OpenLayers.Strategy.Cluster()
+            ]
+        });
         this._format = new VC.SearchResultsFormat();
         this.listenTo(this.model, "change", this._searchResultsChanged);
     },
 
     _refreshLayer: function ($data) {
-        this._layer.addFeatures(this._format.read($data));
+        this._layer.addFeatures(this._format.read($data.features));
     },
 
     _searchResultsChanged: function () {
@@ -19,7 +23,12 @@ KFA.Map.ResultLayer = Backbone.View.extend({
             return;
         }
 
-        $.get("search/search.php", this.model.toJSON(), this._refreshLayer, "json");
+        $.get("search/search.php", this.model.toJSON(), 
+            function ($context) {
+                return function ($data) {
+                    $context._refreshLayer($data)
+                };
+            }(this), "json");
     }
 });
 

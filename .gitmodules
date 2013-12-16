@@ -1,6 +1,6 @@
-[submodule "libs/vc"]
-	path = public_html/libs/vc
-	url = git@bitbucket.org:uclacdh/viewcomponents.git
+# [submodule "libs/vc"]
+# 	path = public_html/libs/vc
+# 	url = git@bitbucket.org:uclacdh/viewcomponents.git
 # [submodule "libs/backbone"]
 # 	path = libs/backbone
 # 	url = git@github.com:jashkenas/backbone.git

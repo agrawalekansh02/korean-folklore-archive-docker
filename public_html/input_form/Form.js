@@ -32,14 +32,16 @@ KFA.InputForm.Form = Backbone.View.extend({
     },
 
     getValuesFromForm: function ($field) {
-        var value = null;
+        var key = $field.replace('.', '').replace('-', '_'),
+            value = null
+        ;
+
         if (this.multiSelectFields.indexOf($field) !== -1) {
             var valuesFromMultiSelect = this.getMultipleValuesFrom(this.$el.find($field));
             if (valuesFromMultiSelect.length === 0) value = null;
             else value = valuesFromMultiSelect;
         } else {
             var el = this.$el.find($field),
-                key = $field.replace('.', '').replace('-', '_'),
                 tagName = el.prop('tagName'),
                 type = el.attr('type')
             ;

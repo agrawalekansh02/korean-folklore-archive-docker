@@ -8,6 +8,7 @@ RewriteEngine On
 #
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/map
 RewriteCond %{REQUEST_URI} !^/index.php
 RewriteCond %{REQUEST_URI} (/|\.js|\.php|\.html|\.htm|\.feed|\.pdf|\.raw|/[^.]*)$  [NC]
 RewriteRule (.*) /index.php

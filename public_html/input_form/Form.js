@@ -36,6 +36,7 @@ KFA.InputForm.Form = Backbone.View.extend({
         if (this.multiSelectFields.indexOf($field) !== -1) {
             var valuesFromMultiSelect = this.getMultipleValuesFrom(this.$el.find($field));
             if (valuesFromMultiSelect.length === 0) value = null;
+            else value = valuesFromMultiSelect;
         } else {
             var el = this.$el.find($field),
                 key = $field.replace('.', '').replace('-', '_'),
@@ -55,7 +56,7 @@ KFA.InputForm.Form = Backbone.View.extend({
                     break; // end checking if the item is an <input>
             }
         }
-        return value;
+        return [key, value];
     },
 
     _updateModel: function ($e) {
@@ -77,9 +78,11 @@ KFA.InputForm.Form = Backbone.View.extend({
             ];
         
         for (var i = 0; i < fields.length; i++) {
-            var value = this.getValuesFromForm(fields[i]);
+            var items = this.getValuesFromForm(fields[i]),
+                key = items[0],
+                value = items[1];
             if (value !== null) {
-                newData[fields[i]] = value;
+                newData[key] = value;
             }
         }
 

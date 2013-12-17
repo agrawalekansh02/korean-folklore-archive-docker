@@ -8,7 +8,7 @@
 nbproject
 
 # Bower
-public_html/bower_components
+bower_components
 
 # Project-specific (because we are using SCSS)
 *.css

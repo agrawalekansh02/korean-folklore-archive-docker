@@ -1,0 +1,29 @@
+{
+  "name": "Korean/Korean-American Folklore Archive Map Search",
+  "version": "0.0.1",
+  "authors": [
+    "Dave Shepard (CDH) <shepard.david@gmail.com>"
+  ],
+  "description": "A map search interface for the Korean/Korean-American Folklore Archive",
+  "main": "index.html",
+  "license": "Copyright",
+  "homepage": "http://kfl.ucla.edu",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "~1.5.2",
+    "jquery": "~2.0.3",
+    "jqueryui": "~1.10",
+    "jquery-ui-multiselect" : "git@github.com:ehynds/jquery-ui-multiselect-widget.git",
+    "openlayers" : "~2.13",
+    "backbone" : "~1.1.0",
+    "mustache": "~0.7.3",
+    "vc" : "git@bitbucket.org:uclacdh/viewcomponents.git"
+  }
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Korean/Korean-American Folklore Archive</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" type="text/css" href="bower_components/jqueryui/themes/base/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/jqueryui/themes/base/jquery.ui.all.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/jquery-ui-multiselect/jquery.multiselect.css" />
+        <link rel="stylesheet" type="text/css" href="app_root.css" />
+        <link rel="stylesheet" type="text/css" href="input_form/input_form.css" />
+        <link rel="stylesheet" type="text/css" href="map/map.css" />
+        <link rel="stylesheet" type="text/css" href="result_list/result_list.css" />
+        <link rel="stylesheet" type="text/css" href="result_list/summary_item.css" />
+
+        <!-- Dependencies -->
+        <script src="bower_components/jquery/jquery.min.js"></script>
+        <script src="bower_components/jqueryui/ui/jquery-ui.js"></script>
+        <script src="bower_components/underscore/underscore-min.js"></script>
+        <script src="bower_components/backbone/backbone-min.js"></script>
+        <script src="bower_components/mustache/mustache.js"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+        <script src="bower_components/openlayers/OpenLayers.js"></script>
+
+        <!-- Dependencies -->
+        <script src="bower_components/jquery-ui-multiselect/jquery.multiselect.js"></script>
+
+        <!--<script src="libs/vc/src/VC.js"></script>-->
+        <!--<script src="libs/vc/src/SearchResultsLayer.js"></script>-->
+        <script src="bower_components/vc/src/VC.js"></script>
+        <script src="bower_components/vc/src/SearchResultsLayer.js"></script>
+
+        <!-- Application -->
+        <script src="AppRoot.js"></script>
+        <!-- Input Form -->
+        <script type="text/template" id="kfa-input-form-template">
+            <form action="#" class="search-form">
+                <fieldset>
+                    <legend>Collector</legend>
+                    <label for="collector-gender">Gender</label>
+                    <select name="collector-gender" class="collector-gender">
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                    </select>
+                    <label for="collector-occupation">Occupation</label>
+                    <input type="text" name="collector-occupation" class="collector-occupation" />
+                    <label for="collector-age">Age</label>
+                    <input type="text" name="collector-age" class="collector-age" />
+                    <!-- TODO: languages as multiselect -->
+                    <label for="collector-language">Languages Spoken</label>
+                    <input type="text" name="collector-language" class="collector-language" />
+                </fieldset>
+                <fieldset>
+                    <legend>Consultant</legend>
+                    <label for="consultant-gender">Gender</label>
+                    <select name="consultant-gender" class="consultant-gender">
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                    </select>
+                    <label for="consultant-occupation">Occupation</label>
+                    <input type="text" name="consultant-occupation" class="consultant-occupation" />
+                    <label for="consultant-age">Age</label>
+                    <input type="text" name="consultant-age" class="consultant-age" />
+                    <label for="consultant-language">Languages Spoken</label>
+                    <input type="text" name="collector-language" class="consultant-language" />
+                    <label for="consultant-language">Languages Spoken</label>
+                    <input type="text" name="consultant-language" class="consultant-language" />
+                </fieldset>
+                <fieldset>
+                    <legend>Context</legend>
+                    <label for="context-name">Name</label>
+                    <input type="text" name="context-name" class="context-name" />
+                    <label for="context-event-type">Event Type</label>
+                    <select name="context-event-type" title="context-event-type" class="context-event-type">
+                        <optgroup label="Celebration">
+                            <option value="Birthday">Birthday</option>
+                            <option value="Seasonal/Holiday">Holiday</option>
+                            <option value="Wedding">Wedding</option>
+                            <option value="Funeral">Funeral</option>
+                            <option value="Graduation">Graduation</option>
+                            <option value="Other Celebration">Other</option>
+                        <optgroup>
+                        <optgroup label="Performance">
+                            <option value="Oral History">Oral History</option>
+                            <option value="Storytelling">Storytelling</option>
+                            <option value="Folk Speech/Gesture">Folk Speech/Gesture</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Song">Song</option>
+                            <option value="Dance">Dance</option>
+                            <option value="Other Performance">Other</option>
+                        </optgroup>
+                        <optgroup label="Material Culture">
+                            <option value="Architecture">Architecture</option>
+                            <option value="Costume/Clothing">Costume/ Clothing</option>
+                            <option value="Body Art or Adornment">Body Art or Adornment</option>
+                            <option value="Folk Art or Craft">Folk Art or Craft</option>
+                            <option value="Cooking">Cooking</option>
+                            <option value="Other Material Culture">Other</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="General Observation">General Observation</option>
+                        </optgroup>
+                    </select>
+                    <label for="context-time-of-day">Time of Day</label>
+                    <select name="context-time-of-day" class="context-time-of-day">
+                        <option value="morning">Morning</option>
+                        <option value="afternoon">Afternoon</option>
+                        <option value="evening">Evening</option>
+                        <option value="night">Night</option>
+                    </select>
+                    <!-- TODO: date span for collection date -->
+                    <label for="collection-date">Date</label>
+                    <label for="collection-weather">Weather</label>
+                    <input type="text" name="collection-weather" class="collection-weather" />
+                    <label for="collection-language">Language</label>
+                    <input type="text" name="collection-language" class="collection-language" />
+                    <label for="collection-place-type">Place Type</label>
+                    <select name="collection-place-type" class="collection-place-type">
+                        <option value="business">Business</option>
+                        <option value="residence">Residence</option>
+                        <option value="public">Public Place</option>
+                    </select>
+                    <label for="collection-others-present">Number of Others Present</label>
+                    <input type="text" name="collection-others-present" class="collection-others-present" />
+                    <label for="collection-method">Collection Method</label>
+                    <select name="collection-method" class="collection-method">
+                        <option value="tape">Tape Recorder</option>
+                        <option value="video">Video Camera</option>
+                        <option value="camera">Still Camera</option>
+                        <option value="notes">Notes</option>
+                    </select>
+                    <label for="collection-description">Description</label>
+                    <input type="text" name="collection-description" class="collection-description" />
+                </fieldset>
+                <fieldset>
+                    <legend>Data</legend>
+                    <label for="project-title">Project Title</label>
+                    <input type="text" name="project-title" class="project-title" />
+                    <label for="media">Media</label>
+                    <select title="media" class="media">
+                        <option value="fieldnotes">Field notes</option>
+                        <option value="images">Images</option>
+                        <option value="video">Video</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                    <label for="description">Description</label>
+                    <input type="text" name="description" class="description" />
+                </fieldset>
+                <input type="submit" name="submit" value="Search" class="search" />
+            </form>
+        </script>
+
+        <script src="input_form/Form.js"> </script>
+        <script src="input_form/Query.js"></script>
+
+
+        <!-- Map -->
+        <script src="map/Map.js"></script>
+        <script src="map/ResultLayer.js"></script>
+
+        <!-- Search Results -->
+        <script type="text/template" id="kfa-summary-item-template">
+            <tr>
+                <td class="project-title">
+                    <a href="{{url}}">{{projectTitle}}</a>
+                </td>
+                <td class="date">{{date}}</td>
+                <td class="city">{{city}}</td>
+                <td class="description">{{description}}</td>
+            </tr>
+        </script>
+        <script src="result_list/List.js"></script>
+        <script src="result_list/Collection.js"></script>
+        <script src="result_list/SummaryItem.js"></script>
+        <script src="result_list/Result.js"></script>
+
+    </head>
+    <body>
+
+        <div id="search-wrapper"></div>
+        <div id="map"></div>
+        <div id="result-list-wrapper">
+            <span class="prev-page">&lt;&lt;</span>
+            <span class="next-page">&gt;&gt;</span>
+            <table id="result-list">
+                <thead>
+                    <tr>
+                        <th>Project Title</th>
+                        <th>Date</th>
+                        <th>City</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody class="search-results"></tbody>
+            </table>
+        </div>
+    </body>
+</html>

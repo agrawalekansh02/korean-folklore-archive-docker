@@ -20,7 +20,7 @@
     "underscore": "~1.5.2",
     "jquery": "~2.0.3",
     "jqueryui": "~1.10",
-    "jquery-ui-multiselect" : "git@github.com:ehynds/jquery-ui-multiselect-widget.git",
+    "jquery-ui-multiselect" : "git@github.com:ehynds/jquery-ui-multiselect-widget.git#1.13",
     "openlayers" : "~2.13",
     "backbone" : "~1.1.0",
     "mustache": "~0.7.3",

@@ -3,6 +3,33 @@
     Author     : dave
 */
 
+#menu {
+    min-height: 0px;
+}
+
+.search-form {
+    margin: 6px;
+
+    button.ui-multiselect {
+        max-width: 100px;
+    }
+
+    input[type=text], select, button.ui-multiselect {
+        width: 110px;
+        display: inline-block;
+        float: left;
+        padding: 5px 0px;
+    }
+
+    label {
+        display: inline-block;
+        float: left;
+        clear: left;
+        width: 100px;
+        padding: 5px 0px;
+    }
+}
+
 #search-wrapper {
     position: absolute;
     width: 20%;
@@ -12,26 +39,39 @@
     background: rgba(255, 255, 255, 0.75);
 }
 
-input[type=text], select {
-    display: inline-block;
-    float: left;
-}
-
-label {
-    display: inline-block;
-    float: left;
-    clear: left;
-    width: 125px;
-}
 
 .fieldset-header {
     clear: both;
 
+    padding: 10px;
+
     background: #E9E9E9;
-    font-size: 1.2em;
+    font-size: 15px;
+    color: #1a2d7f;
+    border: 1px solid rgb(189, 189, 189);
+    border-bottom: none;
 
     span {
         position: relative;
         right: 10px;
     }
+
+    :last-of-type {
+        border-bottom: 1px solid rgb(189, 189, 189);
+    }
+}
+
+.fieldset-body {
+    background: #f0f0f0;
+
+    border: 1px solid lightgray;
+    padding: 11px 10px 11px 15px;
+
+    label {
+        font-weight: normal;
+    }
+}
+
+.background-filler {
+    clear: both;
 }

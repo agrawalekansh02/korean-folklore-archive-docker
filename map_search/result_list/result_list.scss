@@ -4,13 +4,56 @@
 */
 
 #result-list-wrapper {
+
+    border: 2px solid gray;
+    padding: 25px;
+    
+    h2 {
+        font-weight: bold;
+        font-size: 20px;
+        cursor: pointer;
+    }
     
     .next-page, .prev-page {
         color: white;
+        background: #d0d0d0;
+        top: 10px;
+    }
+
+    .next-page {
+        position: absolute;
+        right: 20px;
+    }
+
+    .prev-page {
+        position: absolute;
+        right: 40px;
     }
 
     .active {
-        color: blue;
+        background: blue;
+    }
+
+    .summary-item {
+        margin: 0px;
+        border-bottom: 1px dashed #d0d0d0;
+    }
+
+    ul.result-title {
+        padding: 0px;
+    }
+
+    ul.result-title li {
+        display: inline;
+        text-decoration: underline;
+        font-weight: bold;
+        list-style-type: none;
+        padding-right: 20px;
+    }
+
+    .description {
+        /*padding: 20px;*/
+        padding-bottom: 20px;
     }
 
 }

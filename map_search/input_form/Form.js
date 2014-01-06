@@ -1,10 +1,13 @@
+$(function () {
 KFA.InputForm.Form = Backbone.View.extend({
     template: $("#kfa-input-form-template").html(),
 
     _addMultiSelects: function ($selectors) {
         for (var i = 0; i < $selectors.length; i++) {
             this.$el.find($selectors[i])
-                    .multiselect().multiselect("uncheckAll");
+                    .multiselect({
+                        noneSelectedText: "Select..."
+                }).multiselect("uncheckAll");
         }
     },
 
@@ -15,7 +18,9 @@ KFA.InputForm.Form = Backbone.View.extend({
     ],
 
     render: function () {
-        this.$el.append(Mustache.compile(this.template));
+        var html = Mustache.compile(this.template);
+        this.$el.append(html);
+        $(".collapsible").collapsible();
         this._addMultiSelects(this.multiSelectFields);
         return this;
     },
@@ -100,3 +105,4 @@ KFA.InputForm.Form = Backbone.View.extend({
     }
 });
 
+});

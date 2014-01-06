@@ -23,3 +23,15 @@ label {
     clear: left;
     width: 125px;
 }
+
+.fieldset-header {
+    clear: both;
+
+    background: #E9E9E9;
+    font-size: 1.2em;
+
+    span {
+        position: relative;
+        right: 10px;
+    }
+}

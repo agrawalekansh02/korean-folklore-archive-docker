@@ -73,8 +73,8 @@ KFA.ResultList.List = Backbone.View.extend({
     },
 
     events: {
-        "click.prev-page": "_prevPage",
-        "click.next-page": "_nextPage"
+        "click .prev-page.active": "_prevPage",
+        "click .next-page.active": "_nextPage"
     }
 
 });

@@ -1,3 +1,4 @@
+$(function () {
 KFA.ResultList.SummaryItem = Backbone.View.extend({
 
     template: $("#kfa-summary-item-template").html(),
@@ -6,4 +7,5 @@ KFA.ResultList.SummaryItem = Backbone.View.extend({
         return Mustache.render(this.template, this.model.toJSON());
     }
 
+});
 });

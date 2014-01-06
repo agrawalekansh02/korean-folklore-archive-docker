@@ -5,20 +5,22 @@ KFA.ResultList.List = Backbone.View.extend({
     currentPage: 0,
 
     initialize: function () {
-        this.$results = this.$el.find(".search-results");
+        this.$results = this.$el.find(".result-list");
         this.listenTo(this.model, "change", this._updateList);
     },
 
     _refreshList: function ($data) {
         // add to collection
-        var items = new KFA.ResultList.Collection($data.results);
+        var items = new KFA.ResultList.Collection();
+        items.add($data.results);
         // iterate through and render
+        var self = this;
         var views = items.map(function ($model) {
             var view = new KFA.ResultList.SummaryItem({
                 model: $model
             });
 
-            this.$results.append(view.render());
+            self.$results.append(view.render());
         });
 
         if ($data.nextPage) {
@@ -47,7 +49,13 @@ KFA.ResultList.List = Backbone.View.extend({
         criteria.page = this.currentPage;
         criteria.rpp = this.rpp;
 
-        $.get("search/item_list.php", criteria, this._refreshList, "json");
+//        $.get("search/item_list.php", criteria, this._refreshList, "json");
+        $.get("./map_search/search/sample_result_list.json", criteria, //this._refreshList, "json");
+            function ($context) {
+                return function ($data) {
+                    $context._refreshList($data);
+                };
+            }(this), "json");
     },
 
     _prevPage: function ($e) {

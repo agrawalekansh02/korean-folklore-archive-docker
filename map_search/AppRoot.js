@@ -9,7 +9,7 @@ var KFA = {
             // create search form
             var searchForm = new KFA.InputForm.Form({
                 model: search,
-                el: "#search-wrapper"
+                el: ".leftcolumn"
             });
             searchForm.render();
 
@@ -31,8 +31,3 @@ var KFA = {
     })
 };
 
-
-$(function () {
-    var root = new KFA.AppRoot();
-    root.render();
-});

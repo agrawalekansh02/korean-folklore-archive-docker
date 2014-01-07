@@ -59,6 +59,11 @@
     :last-of-type {
         border-bottom: 1px solid rgb(189, 189, 189);
     }
+
+}
+
+.fieldset-header.last {
+    border-bottom: 1px solid rgb(189, 189, 189);
 }
 
 .fieldset-body {
@@ -70,8 +75,16 @@
     label {
         font-weight: normal;
     }
+
 }
+
 
 .background-filler {
     clear: both;
+}
+
+.search-button-wrapper {
+    position: absolute;
+    margin: 4px 20px 10px 180px;
+    /*left: 200px;*/
 }

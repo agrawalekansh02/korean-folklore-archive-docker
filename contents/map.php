@@ -199,8 +199,8 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
 </div>
 <div id="result-list-wrapper">
     <h2>Results</h2>
-    <span class="prev-page">&lt;&lt;</span>
-    <span class="next-page">&gt;&gt;</span>
+    <span class="prev-page">&lt;</span>
+    <span class="next-page">&gt;</span>
     <div class="result-list">
     </div>
 </div>

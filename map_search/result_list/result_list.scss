@@ -5,32 +5,37 @@
 
 #result-list-wrapper {
 
-    border: 2px solid gray;
+    border: 2px solid #D9D9D9;
     padding: 25px;
     
     h2 {
-        font-weight: bold;
-        font-size: 20px;
+        font-size: 18px;
+        color: gray;
     }
     
     .next-page, .prev-page {
-        color: white;
-        background: #d0d0d0;
-        top: 10px;
+        color: #D9D9D9;
+        position: absolute;
+        top: 0px;
+        width: 20px;
+        height: 20px;
+        padding: 6px;
+        font-weight: normal;
+        border: 1px solid #D9D9D9;
+        font-size: 1.5em;
     }
 
     .next-page {
-        position: absolute;
-        right: 20px;
+        right: 0px;
     }
 
     .prev-page {
-        position: absolute;
-        right: 40px;
+        right: 35px;
     }
 
     .active {
-        background: blue;
+        color: black;
+        border: 1px solid black;
         cursor: pointer;
     }
 

@@ -17,6 +17,15 @@ else if ($_SERVER['SERVER_NAME']=='kfltest.beta.cdh.ucla.edu'){
 	mysql_connect('localhost','kfl','%=t%pm7HVxc8v5X');
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfltest');
+    function get_connection () {
+        return new MySQLi(
+            'localhost',
+            'kfl',
+            '%=t%pm7HVxc8v5X',
+            'kfltest'
+        );
+    }
+
 }
 else if ($_SERVER['SERVER_NAME']=='kfl.humnet.ucla.edu'){
 // if production
@@ -26,6 +35,15 @@ else if ($_SERVER['SERVER_NAME']=='kfl.humnet.ucla.edu'){
 	mysql_connect('localhost','kfl','%=t%pm7HVxc8v5X');
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfl');
+    function get_connection () {
+        return new MySQLi(
+            'localhost',
+            'kfl',
+            '%=t%pm7HVxc8v5X',
+            'kfltest'
+        );
+    }
+
 }
 include_once('user.php');
 

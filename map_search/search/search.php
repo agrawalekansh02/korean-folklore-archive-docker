@@ -8,10 +8,12 @@ require_once 'Factory.php';
 require_once 'QualifiedQuery.php';
 require_once 'SelectQuery.php';
 
+require_once '../../lib.php';
+
 use QuB\Factory;
 
 $co_query = Factory::select('X(co.context_spatial_point) AS lng', 'Y(co.context_spatial_point) AS lat', 'count(*) AS total')
-        ->from('context co')
+        ->from('context_test co')
         ->where("co.context_spatial_point !=''")
         ->group_by('co.context_spatial_point');
 
@@ -198,20 +200,9 @@ if (isset($_GET['description'])) {
     $co_query->and('d.data_description LIKE ?', "%$desc%");
 }
 
-function get_connection () {
-    return new MySQLi(
-        '127.0.0.1',
-        'root',
-        '',
-        'kfl'
-    );
-}
-
 $connection = get_connection();
 
 $statement = $connection->prepare($co_query);
-print $co_query;
-#print $connection->error;
 if (sizeof($co_query->params()) > 1) {
     call_user_func_array(array($statement, 'bind_param'), $co_query->params());
 }

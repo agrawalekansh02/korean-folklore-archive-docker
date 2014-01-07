@@ -11,10 +11,25 @@ KFA.InputForm.Form = Backbone.View.extend({
         }
     },
 
+    _addDateSelectors: function ($selectors) {
+        var minDate = CONSTANTS.minDate.split('-').map(function ($el) {
+            return parseInt($el);
+        });
+        minDate = new Date(minDate[0], minDate[1] - 1, minDate[2]);
+        this.$el.find('.context-date-from').datepicker({
+            defaultDate: minDate
+        });
+        this.$el.find('.context-date-to').datepicker();
+    },
+
     multiSelectFields: [
         '.collector-gender', '.consultant-gender',
         ".context-event-type", ".context-time-of-day", ".collection-method",
         '.collection-place-type', '.media'
+    ],
+
+    dateFields: [
+        '.context-date-from', '.context-date-to'
     ],
 
     render: function () {
@@ -22,6 +37,7 @@ KFA.InputForm.Form = Backbone.View.extend({
         this.$el.append(html);
         $(".collapsible").collapsible();
         this._addMultiSelects(this.multiSelectFields);
+        this._addDateSelectors();
         return this;
     },
 
@@ -37,7 +53,7 @@ KFA.InputForm.Form = Backbone.View.extend({
     },
 
     getValuesFromForm: function ($field) {
-        var key = $field.replace('.', '').replace('-', '_'),
+        var key = $field.replace('.', '').replace(/-/g, '_'),
             value = null
         ;
 
@@ -45,6 +61,8 @@ KFA.InputForm.Form = Backbone.View.extend({
             var valuesFromMultiSelect = this.getMultipleValuesFrom(this.$el.find($field));
             if (valuesFromMultiSelect.length === 0) value = null;
             else value = valuesFromMultiSelect;
+        } else if (this.dateFields.indexOf($field) !== -1) {
+            value = $.datepicker.formatDate('yy-mm-dd', this.$el.find($field).datepicker("getDate"));
         } else {
             var el = this.$el.find($field),
                 tagName = el.prop('tagName'),
@@ -77,7 +95,7 @@ KFA.InputForm.Form = Backbone.View.extend({
                 '.consultant-language',
                 // Context
                 '.context-name', '.context-event-type', '.context-time-of-day',
-                '.collection-date', '.collection-weather', '.collection-language',
+                '.context-date-from', '.context-date-to', '.collection-weather', '.collection-language',
                 '.collection-place-type', '.collection-others-present',
                 '.collection-method', '.collection-description',
                 // Data

@@ -33,10 +33,10 @@ array_map(function ($file) use ($cms) {
     'input_form/Query',
     'map/Map',
     'map/ResultLayer',
+    'result_list/Result',
     'result_list/List',
     'result_list/Collection',
     'result_list/SummaryItem',
-    'result_list/Result',
 ));
 
 
@@ -45,6 +45,19 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
 
 
 ?>
+
+<?php
+    $query = "SELECT MIN(context_date) AS min_date, MAX(context_date) AS max_date "
+                . " FROM context WHERE context_date != '0000-00-00' AND context_date IS NOT NULL";
+    $rsc = mysql_query($query) or die("SQL Error: ". mysql_error());
+    $result = mysql_fetch_assoc($rsc);
+?>
+<script type="text/javascript">
+    var CONSTANTS = {
+        minDate: "<?php echo $result['min_date']; ?>",
+        maxDate: "<?php echo $result['max_date']; ?>"
+    };
+</script>
 <script type="text/template" id="kfa-input-form-template">
     <form action="#" class="search-form">
         <div class="fieldset-header collapsible">Collector<span></span></div>
@@ -103,7 +116,7 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
                 </optgroup>
                 <optgroup label="Material Culture">
                     <option value="Architecture">Architecture</option>
-                    <option value="Costume/Clothing">Costume/ Clothing</option>
+                    <option value="Costume/Clothing">Costume/Clothing</option>
                     <option value="Body Art or Adornment">Body Art or Adornment</option>
                     <option value="Folk Art or Craft">Folk Art or Craft</option>
                     <option value="Cooking">Cooking</option>
@@ -120,8 +133,10 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
                 <option value="evening">Evening</option>
                 <option value="night">Night</option>
             </select>
-            <!-- TODO: date span for collection date -->
-            <label for="collection-date">Date:</label>
+            <label for="context-date-from">Date From:</label>
+            <input type="text" name="context-date-from" class="context-date-from" />
+            <label for="context-date-to">Date To:</label>
+            <input type="text" name="context-date-to" class="context-date-to" />
             <label for="collection-weather">Weather:</label>
             <input type="text" name="collection-weather" class="collection-weather" />
             <label for="collection-language">Language:</label>
@@ -145,7 +160,7 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <input type="text" name="collection-description" class="collection-description" />
             <div class="background-filler"></div>
         </div>
-        <div class="fieldset-header collapsible">Data<span></span></div>
+        <div class="fieldset-header collapsible last">Data<span></span></div>
         <div class="fieldset-body">
             <label for="project-title">Project Title:</label>
             <input type="text" name="project-title" class="project-title" />
@@ -160,38 +175,34 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <input type="text" name="description" class="description" />
             <div class="background-filler"></div>
         </div>
-        <input type="submit" name="submit" value="Search" class="search" />
+        <div class="search-button-wrapper">
+            <input type="submit" name="submit" value="Search" class="search" />
+        </div>
     </form>
 </script>
 
 <script type="text/template" id="kfa-summary-item-template">
-    <tr>
-        <td class="project-title">
-            <a href="{{url}}">{{projectTitle}}</a>
-        </td>
-        <td class="date">{{date}}</td>
-        <td class="city">{{city}}</td>
-        <td class="description">{{description}}</td>
-    </tr>
+    <div class="summary-item">
+        <ul class="result-title">
+            <li><a href="{{url}}" target="_blank">{{projectTitle}}</a></li>
+            <li><a href="{{url}}" target="_blank">{{date}}</a></li>
+            <li><a href="{{url}}" target="_blank">{{city}}</a></li>
+        </ul>
+        <div class="description">{{description}}</div>
+    </div>
 </script>
 
 
 <div id="search-wrapper"></div>
-<div id="map"></div>
+<div id="map-wrapper">
+    <div id="map"></div>
+</div>
 <div id="result-list-wrapper">
+    <h2>Results</h2>
     <span class="prev-page">&lt;&lt;</span>
     <span class="next-page">&gt;&gt;</span>
-    <table id="result-list">
-        <thead>
-            <tr>
-                <th>Project Title</th>
-                <th>Date</th>
-                <th>City</th>
-                <th>Description</th>
-            </tr>
-        </thead>
-        <tbody class="search-results"></tbody>
-    </table>
+    <div class="result-list">
+    </div>
 </div>
 <script>
 $(function () {

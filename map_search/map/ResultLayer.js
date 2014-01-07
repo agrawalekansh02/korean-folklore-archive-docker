@@ -30,7 +30,7 @@ KFA.Map.ResultLayer = Backbone.View.extend({
             return;
         }
 
-        $.get("search/search.php", this.model.toJSON(), 
+        $.get("../map_search/search/search.php", this.model.toJSON(), 
             function ($context) {
                 return function ($data) {
                     $context._refreshLayer($data)

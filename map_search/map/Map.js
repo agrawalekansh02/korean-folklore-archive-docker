@@ -17,6 +17,19 @@ KFA.Map.Map = Backbone.View.extend({
 
     addLayer: function ($layer) {
         this._map.addLayer($layer._layer);
+        var self = this;
+        this._selectControl = new OpenLayers.Control.SelectFeature($layer._layer, {
+            onSelect: function ($f) {
+                self.model.set("contexts", $f.cluster.map(function ($f) {
+                    return $f.data.id;
+                }));
+            },
+            onUnselect: function ($f) {
+                self.model.set("contexts", []);
+            }
+        });
+        this._map.addControl(this._selectControl);
+        this._selectControl.activate();
     }
 });
 

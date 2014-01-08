@@ -2,10 +2,18 @@ KFA.Map.ResultLayer = Backbone.View.extend({
 
     initialize: function ($options) {
         var style = new OpenLayers.StyleMap({
-            pointRadius : '5',
-            fillColor : 'red',
-            strokeColor: 'red',
-            fillOpacity: 0.5
+            default: {
+                pointRadius : '5',
+                fillColor : 'red',
+                strokeColor: 'red',
+                fillOpacity: 0.5
+            },
+            select: {
+                pointRadius: '5',
+                fillColor: 'blue',
+                strokeColor: 'blue',
+                fillOpacity: 0.5
+            }
         });
         this._layer = new OpenLayers.Layer.Vector("Search Results", {
             strategies: [
@@ -15,7 +23,6 @@ KFA.Map.ResultLayer = Backbone.View.extend({
         });
         this._format = new VC.SearchResultsFormat();
         this.listenTo(this.model, "change", this._searchResultsChanged);
-        // TODO: add select control
     },
 
     _refreshLayer: function ($data) {

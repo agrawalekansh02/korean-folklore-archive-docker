@@ -4,9 +4,11 @@ KFA.ResultList.List = Backbone.View.extend({
 
     currentPage: 0,
 
-    initialize: function () {
+    initialize: function ($options) {
         this.$results = this.$el.find(".result-list");
+        this.contextList = $options.contextList;
         this.listenTo(this.model, "change", this._updateList);
+        this.listenTo(this.contextList, "change", this._updateList);
     },
 
     _refreshList: function ($data) {
@@ -46,11 +48,18 @@ KFA.ResultList.List = Backbone.View.extend({
         }
 
         var criteria = this.model.toJSON();
+        var contextIds = criteria.context_ids = contextIds = this.contextList.get("contexts");
+        if (_.isEmpty(contextIds)) {
+            // Do nothing if no context is selected
+            // Note that the result list has already been emptied above
+            return;
+        } 
         criteria.page = this.currentPage;
         criteria.rpp = this.rpp;
 
-//        $.get("search/item_list.php", criteria, this._refreshList, "json");
-        $.get("./map_search/search/sample_result_list.json", criteria, //this._refreshList, "json");
+        $.get("./map_search/search/sample_result_list.json", criteria, 
+            // This construct is necessary to ensure that the context of
+            // _refreshList is properly bound to this model
             function ($context) {
                 return function ($data) {
                     $context._refreshList($data);

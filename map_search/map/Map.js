@@ -11,7 +11,6 @@ KFA.Map.Map = Backbone.View.extend({
         var center = new OpenLayers.LonLat(-118, 34)
                 .transform("EPSG:4326", "EPSG:900913");
         this._map.setCenter(center, 12);
-        this._map.addControl(new OpenLayers.Control.LayerSwitcher());
         return this;
     },
 

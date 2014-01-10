@@ -23,9 +23,16 @@ KFA.InputForm.Form = Backbone.View.extend({
     },
 
     multiSelectFields: [
-        '.collector-gender', '.consultant-gender',
-        ".context-event-type", ".context-time-of-day", ".collection-method",
-        '.collection-place-type', '.media'
+        // Collector
+        '.collector-gender', '.collector-language', 
+        // Consultant
+        '.consultant-gender', '.consultant-language',
+        // Context
+        ".context-event-type", ".context-time-of-day", '.collection-weather', 
+        '.collection-language', '.collection-others-present', ".collection-method",
+        '.collection-place-type', 
+        // Data
+        '.media'
     ],
 
     dateFields: [

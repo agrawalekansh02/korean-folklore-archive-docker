@@ -72,9 +72,15 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <input type="text" name="collector-occupation" class="collector-occupation" />
             <label for="collector-age">Age:</label>
             <input type="text" name="collector-age" class="collector-age" />
-            <!-- TODO: languages as multiselect -->
             <label for="collector-language">Languages Spoken:</label>
-            <input type="text" name="collector-language" class="collector-language" />
+            <select name="collector-language" class="collector-language">
+                <option value="english">English</option>
+                <option value="korean">Korean</option>
+                <option value="japanese">Japanese</option>
+                <option value="chinese">Chinese</option>
+                <option value="spanish">Spanish</option>
+                <option value="other">Other</option>
+            </select>
             <div class="background-filler"></div>
         </div>
         <div class="fieldset-header collapsible">Consultant<span></span></div>
@@ -89,7 +95,14 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <label for="consultant-age">Age:</label>
             <input type="text" name="consultant-age" class="consultant-age" />
             <label for="consultant-language">Languages Spoken:</label>
-            <input type="text" name="consultant-language" class="consultant-language" />
+            <select name="consultant-language" class="consultant-language">
+                <option value="english">English</option>
+                <option value="korean">Korean</option>
+                <option value="japanese">Japanese</option>
+                <option value="chinese">Chinese</option>
+                <option value="spanish">Spanish</option>
+                <option value="other">Other</option>
+            </select>
             <div class="background-filler"></div>
         </div>
         <div class="fieldset-header collapsible">Context<span></span></div>
@@ -139,9 +152,21 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <label for="context-date-to">Date To:</label>
             <input type="text" name="context-date-to" class="context-date-to" />
             <label for="collection-weather">Weather:</label>
-            <input type="text" name="collection-weather" class="collection-weather" />
+            <select name="collection-weather" class="collection-weather">
+                <option value="sunny">Sunny</option>
+                <option value="overcast">Overcast</option>
+                <option value="raining">Raining</option>
+                <option value="snowing">Snowing</option>
+            </select>
             <label for="collection-language">Language:</label>
-            <input type="text" name="collection-language" class="collection-language" />
+            <select name="collection-language" class="collection-language">
+                <option value="english">English</option>
+                <option value="korean">Korean</option>
+                <option value="japanese">Japanese</option>
+                <option value="chinese">Chinese</option>
+                <option value="spanish">Spanish</option>
+                <option value="other">Other</option>
+            </select>
             <label for="collection-place-type">Place Type:</label>
             <select name="collection-place-type" class="collection-place-type">
                 <option value="business">Business</option>
@@ -149,7 +174,11 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
                 <option value="public">Public Place</option>
             </select>
             <label for="collection-others-present">Number of Others Present:</label>
-            <input type="text" name="collection-others-present" class="collection-others-present" />
+            <select name="collection-others-present" class="collection-others-present">
+                <option value="1">1</option>
+                <option value="2-5">2-5</option>
+                <option value="5+">5 or more</option>
+            </select>
             <label for="collection-method">Collection Method:</label>
             <select name="collection-method" class="collection-method">
                 <option value="tape">Tape Recorder</option>
@@ -172,7 +201,7 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
                 <option value="video">Video</option>
                 <option value="audio">Audio</option>
             </select>
-            <label for="description">Description:</label>
+            <label for="description">Description (full text search):</label>
             <input type="text" name="description" class="description" />
             <div class="background-filler"></div>
         </div>

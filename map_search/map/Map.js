@@ -19,12 +19,13 @@ KFA.Map.Map = Backbone.View.extend({
         var self = this;
         this._selectControl = new OpenLayers.Control.SelectFeature($layer._layer, {
             onSelect: function ($f) {
-                self.model.set("contexts", $f.cluster.map(function ($f) {
-                    return $f.data.id;
-                }));
+                var bbox = $f.geometry.bounds.transform('EPSG:900913', 'EPSG:4326');
+                self.model.set('context_bbox', 
+                    bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top
+                );
             },
             onUnselect: function ($f) {
-                self.model.set("contexts", []);
+                self.model.set("context_bbox", '');
             }
         });
         this._map.addControl(this._selectControl);

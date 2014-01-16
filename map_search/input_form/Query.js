@@ -16,6 +16,7 @@ KFA.InputForm.Query = Backbone.Model.extend({
             consultant_immigration_status: '',
 
             // context
+            context_bbox: '',
             context_name: '',
             context_event_type: '',
             collection_time_of_day: '',

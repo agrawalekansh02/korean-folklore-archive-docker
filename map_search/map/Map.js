@@ -19,7 +19,7 @@ KFA.Map.Map = Backbone.View.extend({
         var self = this;
         this._selectControl = new OpenLayers.Control.SelectFeature($layer._layer, {
             onSelect: function ($f) {
-                var bbox = $f.geometry.bounds.transform('EPSG:900913', 'EPSG:4326');
+                var bbox = $f.geometry.bounds.clone().transform('EPSG:900913', 'EPSG:4326');
                 self.model.set('context_bbox', 
                     bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top
                 );

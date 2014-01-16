@@ -6,6 +6,7 @@ array_map(function ($file) use ($cms) {
 );
 
 $cms->css[] = "map_search/bower_components/jquery-ui-multiselect/jquery.multiselect.css";
+$cms->css[] = "map_search/bower_components/jQRangeSlider-5.5.0/css/classic-min.css";
 $cms->css[] = "map_search/main.css";
 
 array_map(function ($file) use ($cms) {
@@ -20,6 +21,7 @@ array_map(function ($file) use ($cms) {
     'mustache/mustache',
     'openlayers/OpenLayers',
     'jquery-ui-multiselect/src/jquery.multiselect',
+    'jQRangeSlider-5.5.0/jQAllRangeSliders-min',
     'vc/src/VC',
     'vc/src/SearchResultsLayer',
 
@@ -71,7 +73,9 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <label for="collector-occupation">Occupation:</label>
             <input type="text" name="collector-occupation" class="collector-occupation" />
             <label for="collector-age">Age:</label>
-            <input type="text" name="collector-age" class="collector-age" />
+            <!--<input type="text" name="collector-age" class="collector-age" />-->
+            <br/>
+            <div class="collector-age"></div>
             <label for="collector-language">Languages Spoken:</label>
             <select name="collector-language" class="collector-language">
                 <option value="english">English</option>
@@ -93,7 +97,8 @@ $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
             <label for="consultant-occupation">Occupation:</label>
             <input type="text" name="consultant-occupation" class="consultant-occupation" />
             <label for="consultant-age">Age:</label>
-            <input type="text" name="consultant-age" class="consultant-age" />
+            <!--<input type="text" name="consultant-age" class="consultant-age" />-->
+            <div class="consultant-age"></div>
             <label for="consultant-language">Languages Spoken:</label>
             <select name="consultant-language" class="consultant-language">
                 <option value="english">English</option>

@@ -22,6 +22,7 @@
     "jqueryui": "~1.10",
     "jquery-ui-multiselect" : "git@github.com:ehynds/jquery-ui-multiselect-widget.git#1.13",
     "jquery-collapsible": "git@github.com:juven14/Collapsible.git",
+    "jQRangeSlider" : "https://github.com/ghusse/jQRangeSlider.git",
     "openlayers" : "~2.13",
     "backbone" : "~1.1.0",
     "mustache": "~0.7.3",

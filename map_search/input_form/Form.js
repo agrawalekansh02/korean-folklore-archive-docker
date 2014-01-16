@@ -39,11 +39,40 @@ KFA.InputForm.Form = Backbone.View.extend({
         '.context-date-from', '.context-date-to'
     ],
 
+    ageSliders: [
+        '.collector-age', '.consultant-age'
+    ],
+
+    _addAgeSliders: function ($selectors) {
+        for (var i = 0; i < $selectors.length; i++) {
+            var selector = $selectors[i];
+            this.$el.find(selector).rangeSlider({
+                bounds : {min: 18, max: 80},
+                defaultValues: {
+                    min: 20,
+                    max: 80
+                },
+                formatter: function (val) {
+                    val = Math.floor(val);
+                    if (val === 18) {
+                        return "18 or younger";
+                    } else if (val === 80) {
+                        return "80+";
+                    } else {
+                        return val;
+                    }
+                }
+            });
+        }
+    },
+
     render: function () {
         var html = Mustache.compile(this.template);
         this.$el.append(html);
         $(".collapsible").collapsible();
+        $(".collapsible").collapsible("open");
         this._addMultiSelects(this.multiSelectFields);
+        this._addAgeSliders(this.ageSliders);
         this._addDateSelectors();
         return this;
     },
@@ -70,6 +99,10 @@ KFA.InputForm.Form = Backbone.View.extend({
             else value = valuesFromMultiSelect;
         } else if (this.dateFields.indexOf($field) !== -1) {
             value = $.datepicker.formatDate('yy-mm-dd', this.$el.find($field).datepicker("getDate"));
+        } else if (this.ageSliders.indexOf($field) !== -1) {
+            // TODO: set value
+            var raw = this.$el.find($field).rangeSlider("values");
+            value = Math.round(raw.min) + "," + Math.round(raw.max);
         } else {
             var el = this.$el.find($field),
                 tagName = el.prop('tagName'),

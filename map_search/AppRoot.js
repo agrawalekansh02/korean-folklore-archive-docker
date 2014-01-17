@@ -16,7 +16,7 @@ var KFA = {
             var contextList = new KFA.Map.ContextList();
 
             var map = new KFA.Map.Map({
-                model: contextList,
+                model: search,
                 el: "#map"
             });
             map.render();

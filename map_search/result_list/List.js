@@ -49,15 +49,17 @@ KFA.ResultList.List = Backbone.View.extend({
 
         var criteria = this.model.toJSON();
         var contextIds = criteria.context_ids = contextIds = this.contextList.get("contexts");
+/*
         if (_.isEmpty(contextIds)) {
             // Do nothing if no context is selected
             // Note that the result list has already been emptied above
             return;
         } 
+*/
         criteria.page = this.currentPage;
         criteria.rpp = this.rpp;
 
-        $.get("./map_search/search/sample_result_list.json", criteria, 
+        $.get("./map_search/search/result_list.php", criteria, 
             // This construct is necessary to ensure that the context of
             // _refreshList is properly bound to this model
             function ($context) {

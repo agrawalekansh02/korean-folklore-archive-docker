@@ -9,6 +9,9 @@ class SelectQuery extends QualifiedQuery {
 
     protected $group_by = array()
         ;
+    
+    protected $limit = array()
+        ;
 
     public function __construct($fields) {
         $this->add_fields($fields);
@@ -24,6 +27,11 @@ class SelectQuery extends QualifiedQuery {
         return $this;
     }
 
+    public function limit() {
+        $this->limit = array_merge($this->limit, func_get_args());
+        return $this;
+    }
+
     public function __toString() {
         $query = "SELECT ".implode(', ', $this->fields)
                 ." FROM ".implode(', ', $this->tables);
@@ -32,6 +40,9 @@ class SelectQuery extends QualifiedQuery {
         }
         if ($this->group_by) {
             $query .= " GROUP BY ".implode(', ', $this->group_by);
+        }
+        if ($this->limit) {
+            $query .= " LIMIT ".implode(', ', $this->limit);
         }
         return $query;
     }

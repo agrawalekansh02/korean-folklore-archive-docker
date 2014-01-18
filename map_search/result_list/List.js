@@ -48,14 +48,10 @@ KFA.ResultList.List = Backbone.View.extend({
         }
 
         var criteria = this.model.toJSON();
-        var contextIds = criteria.context_ids = contextIds = this.contextList.get("contexts");
-/*
-        if (_.isEmpty(contextIds)) {
-            // Do nothing if no context is selected
-            // Note that the result list has already been emptied above
+        if (!this.model.get('context_bbox')) {
             return;
-        } 
-*/
+        }
+
         criteria.page = this.currentPage;
         criteria.rpp = this.rpp;
 

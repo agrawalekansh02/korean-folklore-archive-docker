@@ -11,13 +11,13 @@ require_once '../../lib.php';
 
 use QuB\Factory;
 
-$res_query = Factory::select('co.context_city AS city', 'co.context_date AS date', 'SUBSTRING(da.data_description,1,20) AS description', 'da.data_project_title AS projectTitle', 'da.data_id AS dataId', 'da.collector_id AS collectorId')
-->from('context co', 'data da')
-->where("co.context_id = da.context_id");
+$res_query = Factory::select('co.context_city AS city', 'co.context_date AS date', 'SUBSTRING(d.data_description,1,20) AS description', 'd.data_project_title AS projectTitle', 'd.data_id AS dataId', 'd.collector_id AS collectorId')
+->from('context co', 'data d')
+->where("co.context_id = d.context_id AND co.context_spatial_point !=''");
 
 $count_query = Factory::select('count(*) AS totalRows')
-->from('context co', 'data da')
-->where("co.context_id = da.context_id");
+->from('context co', 'data d')
+->where("co.context_id = d.context_id AND co.context_spatial_point !=''");
 
 if (isset($_GET['context_bbox'])) {
     $bbox = $_GET['context_bbox'];
@@ -25,6 +25,376 @@ if (isset($_GET['context_bbox'])) {
     $polygon = "GeomFromText('Polygon(($bbox[0] $bbox[1],$bbox[0] $bbox[3],$bbox[2] $bbox[3],$bbox[2] $bbox[1],$bbox[0] $bbox[1]))')";
     $res_query->and("MBRContains($polygon,co.context_spatial_point)=1");
     $count_query->and("MBRContains($polygon,co.context_spatial_point)=1");
+}
+
+if ((isset($_GET['collector_gender'])) or (isset($_GET['collector_age'])) or (isset($_GET['collector_occupation'])) or (isset($_GET['collector_language']))) {
+    $res_query->from('collector col', 'consultant con');
+    $count_query->from('collector col', 'consultant con');
+} elseif ((isset($_GET['consultant_gender'])) or (isset($_GET['consultant_age'])) or (isset($_GET['consultant_occupation'])) or (isset($_GET['consultant_language'])) or (isset($_GET['consultant_immigration_status']))) {
+    $res_query->from('consultant con');
+    $count_query->from('consultant con');
+}
+
+if (isset($_GET['collector_gender'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->and('col.collector_id=con.collector_id');
+    $res_query->open_group('AND');
+    foreach ($_GET['collector_gender'] as $gender) {
+        $gender = strtoupper($gender);
+        $res_query->or('col.collector_gender LIKE ?', "$gender%");
+    }
+    $res_query->close_group();
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->and('col.collector_id=con.collector_id');
+    $count_query->open_group('AND');
+    foreach ($_GET['collector_gender'] as $gender) {
+        $gender = strtoupper($gender);
+        $count_query->or('col.collector_gender LIKE ?', "$gender%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collector_occupation'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->and('col.collector_id=con.collector_id');
+    $occupation = $_GET['collector_occupation'];
+    $res_query->and('col.collector_occupation LIKE ?', "$occupation");
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->and('col.collector_id=con.collector_id');
+    $occupation = $_GET['collector_occupation'];
+    $count_query->and('col.collector_occupation LIKE ?', "$occupation");
+}
+
+if (isset($_GET['collector_age'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->and('col.collector_id=con.collector_id');
+    $age = $_GET['collector_age'];
+    $age = explode(",", $age);
+    if ($age[0]==18 and $age[1]==18) {
+        $res_query->and('col.collector_age >= 0');
+        $res_query->and('col.collector_age <= 18');
+    } elseif ($age[0]==18 and $age[1]==80) {
+        $res_query->and('col.collector_age >= 0');
+    } elseif ($age[0]==80 and $age[1]==80) {
+        $res_query->and('col.collector_age >= 80');
+    } elseif ($age[0]==18 and $age[1]<80) {
+        $res_query->and('col.collector_age >= 0');
+        $res_query->and('col.collector_age <= ?', $age[1]);
+    } elseif ($age[0]>18 and $age[1]==80) {
+        $res_query->and('col.collector_age >= ?', $age[0]);
+    } else {
+        $res_query->and('col.collector_age >= ?', $age[0]);
+        $res_query->and('col.collector_age <= ?', $age[1]);
+    }
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->and('col.collector_id=con.collector_id');
+    $age = $_GET['collector_age'];
+    $age = explode(",", $age);
+    if ($age[0]==18 and $age[1]==18) {
+        $count_query->and('col.collector_age >= 0');
+        $count_query->and('col.collector_age <= 18');
+    } elseif ($age[0]==18 and $age[1]==80) {
+        $count_query->and('col.collector_age >= 0');
+    } elseif ($age[0]==80 and $age[1]==80) {
+        $count_query->and('col.collector_age >= 80');
+    } elseif ($age[0]==18 and $age[1]<80) {
+        $count_query->and('col.collector_age >= 0');
+        $count_query->and('col.collector_age <= ?', $age[1]);
+    } elseif ($age[0]>18 and $age[1]==80) {
+        $count_query->and('col.collector_age >= ?', $age[0]);
+    } else {
+        $count_query->and('col.collector_age >= ?', $age[0]);
+        $count_query->and('col.collector_age <= ?', $age[1]);
+    }
+}
+
+if (isset($_GET['collector_language'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->and('col.collector_id=con.collector_id');
+    $res_query->open_group('AND');
+    foreach ($_GET['collector_language'] as $language) {
+        $res_query->or('col.collector_language LIKE ?', "%$language%");
+    }
+    $res_query->close_group();
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->and('col.collector_id=con.collector_id');
+    $count_query->open_group('AND');
+    foreach ($_GET['collector_language'] as $language) {
+        $count_query->or('col.collector_language LIKE ?', "%$language%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['consultant_gender'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->open_group('AND');
+    foreach ($_GET['consultant_gender'] as $gender) {
+        $gender = strtoupper($gender);
+        $res_query->or('con.consultant_gender LIKE ?', "$gender%");
+    }
+    $res_query->close_group();
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->open_group('AND');
+    foreach ($_GET['consultant_gender'] as $gender) {
+        $gender = strtoupper($gender);
+        $count_query->or('con.consultant_gender LIKE ?', "$gender%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['consultant_occupation'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $occupation = $_GET['consultant_occupation'];
+    $res_query->and('con.consultant_occupation LIKE ?', "$occupation");
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $occupation = $_GET['consultant_occupation'];
+    $count_query->and('con.consultant_occupation LIKE ?', "$occupation");
+}
+
+if (isset($_GET['consultant_age'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $age = $_GET['consultant_age'];
+    $age = explode(",", $age);
+    if ($age[0]==18 and $age[1]==18) {
+        $res_query->and('con.consultant_age >= 0');
+        $res_query->and('con.consultant_age <= 18');
+    } elseif ($age[0]==18 and $age[1]==80) {
+        $res_query->and('con.consultant_age >= 0');
+    } elseif ($age[0]==80 and $age[1]==80) {
+        $res_query->and('con.consultant_age >= 80');
+    } elseif ($age[0]==18 and $age[1]<80) {
+        $res_query->and('con.consultant_age >= 0');
+        $res_query->and('con.consultant_age <= ?', $age[1]);
+    } elseif ($age[0]>18 and $age[1]==80) {
+        $res_query->and('con.consultant_age >= ?', $age[0]);
+    } else {
+        $res_query->and('con.consultant_age >= ?', $age[0]);
+        $res_query->and('con.consultant_age <= ?', $age[1]);
+    }
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $age = $_GET['consultant_age'];
+    $age = explode(",", $age);
+    if ($age[0]==18 and $age[1]==18) {
+        $count_query->and('con.consultant_age >= 0');
+        $count_query->and('con.consultant_age <= 18');
+    } elseif ($age[0]==18 and $age[1]==80) {
+        $count_query->and('con.consultant_age >= 0');
+    } elseif ($age[0]==80 and $age[1]==80) {
+        $count_query->and('con.consultant_age >= 80');
+    } elseif ($age[0]==18 and $age[1]<80) {
+        $count_query->and('con.consultant_age >= 0');
+        $count_query->and('con.consultant_age <= ?', $age[1]);
+    } elseif ($age[0]>18 and $age[1]==80) {
+        $count_query->and('con.consultant_age >= ?', $age[0]);
+    } else {
+        $count_query->and('con.consultant_age >= ?', $age[0]);
+        $count_query->and('con.consultant_age <= ?', $age[1]);
+    }
+}
+
+if (isset($_GET['consultant_language'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $res_query->open_group('AND');
+    foreach ($_GET['consultant_language'] as $language) {
+        $res_query->or('con.consultant_language LIKE ?', "%$language%");
+    }
+    $res_query->close_group();
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $count_query->open_group('AND');
+    foreach ($_GET['consultant_language'] as $language) {
+        $count_query->or('con.consultant_language LIKE ?', "%$language%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['consultant_immigration_status'])) {
+    $res_query->and('co.context_consultants=con.consultant_id');
+    $immigration_status = $_GET['consultant_immigration_status'];
+    $res_query->and('con.consultant_age = ?', $immigration_status);
+
+    $count_query->and('co.context_consultants=con.consultant_id');
+    $immigration_status = $_GET['consultant_immigration_status'];
+    $count_query->and('con.consultant_age = ?', $immigration_status);
+}
+
+if (isset($_GET['context_name'])) {
+    $name = $_GET['context_name'];
+    $res_query->and('co.context_event_name LIKE ?', "$name");
+
+    $name = $_GET['context_name'];
+    $count_query->and('co.context_event_name LIKE ?', "$name");
+}
+
+if (isset($_GET['context_event_type'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['context_event_type'] as $event_type) {
+        $res_query->or('co.context_event_type LIKE ?', "$event_type");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['context_event_type'] as $event_type) {
+        $count_query->or('co.context_event_type LIKE ?', "$event_type");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['context_time_of_day'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['context_time_of_day'] as $time) {
+        $res_query->or('co.context_time LIKE ?', "$time");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['context_time_of_day'] as $time) {
+        $count_query->or('co.context_time LIKE ?', "$time");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['context_date_from']) and ($_GET['context_date_from'] != '')) {
+    $fromDate = $_GET['context_date_from'];
+    $res_query->and('co.context_date >= ?', "$fromDate");
+
+    $fromDate = $_GET['context_date_from'];
+    $count_query->and('co.context_date >= ?', "$fromDate");
+}
+
+if (isset($_GET['context_date_to']) and ($_GET['context_date_to'] != '')) {
+    $toDate = $_GET['context_date_to'];
+    $res_query->and('co.context_date <= ?', "$toDate");
+
+    $toDate = $_GET['context_date_to'];
+    $count_query->and('co.context_date <= ?', "$toDate");
+}
+
+if (isset($_GET['collection_weather'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['collection_weather'] as $weather) {
+        $res_query->or('co.context_weather LIKE ?', "$weather");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['collection_weather'] as $weather) {
+        $count_query->or('co.context_weather LIKE ?', "$weather");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collection_language'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['collection_language'] as $language) {
+        $res_query->or('co.context_language LIKE ?', "%$language%");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['collection_language'] as $language) {
+        $count_query->or('co.context_language LIKE ?', "%$language%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collection_place_type'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['collection_place_type'] as $place_type) {
+        $res_query->or('co.context_place LIKE ?', "$place_type");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['collection_place_type'] as $place_type) {
+        $count_query->or('co.context_place LIKE ?', "$place_type");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collection_others_present'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['collection_others_present'] as $others) {
+        if ($others == 1) {
+            $res_query->or('co.context_otherpresent_num = 1');
+        } elseif ($others == '2-5') {
+            $res_query->or('co.context_otherpresent_num >= 2 OR co.context_otherpresent_num <= 5');
+        } else {
+            $res_query->or('co.context_otherpresent_num > 5');
+        }
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['collection_others_present'] as $others) {
+        if ($others == 1) {
+            $count_query->or('co.context_otherpresent_num = 1');
+        } elseif ($others == '2-5') {
+            $count_query->or('co.context_otherpresent_num >= 2 OR co.context_otherpresent_num <= 5');
+        } else {
+            $count_query->or('co.context_otherpresent_num > 5');
+        }
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collection_method'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['collection_method'] as $method) {
+        $res_query->or('co.context_media LIKE ?', "%$method%");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['collection_method'] as $method) {
+        $count_query->or('co.context_media LIKE ?', "%$method%");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['collection_description'])) {
+    $desc = $_GET['collection_description'];
+    $res_query->and('co.context_description LIKE ?', "%$desc%");
+
+    $desc = $_GET['collection_description'];
+    $count_query->and('co.context_description LIKE ?', "%$desc%");
+}
+
+if (isset($_GET['project_title'])) {
+    $project_title = $_GET['project_title'];
+    $res_query->and('d.data_project_title LIKE ?', "$project_title");
+
+    $project_title = $_GET['project_title'];
+    $count_query->and('d.data_project_title LIKE ?', "$project_title");
+}
+
+if (isset($_GET['media'])) {
+    $res_query->open_group('AND');
+    foreach ($_GET['media'] as $media) {
+        $res_query->or('d.data_type LIKE ?', "$media");
+    }
+    $res_query->close_group();
+
+    $count_query->open_group('AND');
+    foreach ($_GET['media'] as $media) {
+        $count_query->or('d.data_type LIKE ?', "$media");
+    }
+    $count_query->close_group();
+}
+
+if (isset($_GET['description'])) {
+    $desc = $_GET['description'];
+    $res_query->and('d.data_description LIKE ?', "%$desc%");
+
+    $desc = $_GET['description'];
+    $count_query->and('d.data_description LIKE ?', "%$desc%");
 }
 
 $connection_count = get_connection();
@@ -62,12 +432,12 @@ if(($lastPage == 0) or ($lastPage == 1)) {
 } else {
     if ($page == 1) {
         $prevPage = false;
-        $nextPage = "result_list.php?bbox=" . $_GET['bbox'] . "&page=" . $nextPageNum;
+        $nextPage = "result_list.php?bbox=" . $_GET['context_bbox'] . "&page=" . $nextPageNum;
     } elseif ($page != $lastPage) {
-        $prevPage = "result_list.php?bbox=" . $_GET['bbox'] . "&page=" . $prevPageNum;
-        $nextPage = "result_list.php?bbox=" . $_GET['bbox'] . "&page=" . $nextPageNum;
+        $prevPage = "result_list.php?bbox=" . $_GET['context_bbox'] . "&page=" . $prevPageNum;
+        $nextPage = "result_list.php?bbox=" . $_GET['context_bbox'] . "&page=" . $nextPageNum;
     } else {
-        $prevPage = 'result_list.php?bbox=' . $_GET['bbox'] . '&page=' . $prevPageNum;
+        $prevPage = 'result_list.php?bbox=' . $_GET['context_bbox'] . '&page=' . $prevPageNum;
         $nextPage = false;
     }
 }

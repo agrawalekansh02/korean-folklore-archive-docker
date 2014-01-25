@@ -11,55 +11,51 @@ require_once '../../lib.php';
 
 use QuB\Factory;
 
-$co_query = Factory::select('X(co.context_spatial_point) AS lng',
-    'Y(co.context_spatial_point) AS lat', 'COUNT(*) AS total')
+$co_query = Factory::select('X(co.context_spatial_point) AS lng', 'Y(co.context_spatial_point) AS lat', 'count(*) AS total')
 ->from('context co')
-->where("co.context_spatial_point IS NOT NULL")
+->where("co.context_spatial_point !=''")
 ->group_by('co.context_spatial_point');
 
-if ((isset($_GET['collector_gender'])) || (isset($_GET['collector_age']))
-    || (isset($_GET['collector_occupation']))
-    || (isset($_GET['collector_language']))) {
+if ((isset($_GET['collector_gender'])) or (isset($_GET['collector_age'])) or (isset($_GET['collector_occupation'])) or (isset($_GET['collector_language']))) {
     $co_query->from('collector col', 'consultant con');
-} elseif ((isset($_GET['consultant_gender']))
-    || (isset($_GET['consultant_age']))
-    || (isset($_GET['consultant_occupation']))
-    || (isset($_GET['consultant_language']))
-    || (isset($_GET['consultant_immigration_status']))) {
+} elseif ((isset($_GET['consultant_gender'])) or (isset($_GET['consultant_age'])) or (isset($_GET['consultant_occupation'])) or (isset($_GET['consultant_language'])) or (isset($_GET['consultant_immigration_status']))) {
     $co_query->from('consultant con');
 }
 
 if (isset($_GET['collector_gender'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $co_query->and('col.collector_id=con.collector_id');
     $co_query->open_group('AND');
     foreach ($_GET['collector_gender'] as $gender) {
         $gender = strtoupper($gender);
-        $co_query->or('col.collector_gender = ?', $gender);
+        $co_query->or('col.collector_gender LIKE ?', "$gender%");
     }
     $co_query->close_group();
 }
 
 if (isset($_GET['collector_occupation'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
-    $co_query->and('col.collector_occupation = ?',
-        $_GET['collector_occupation']);
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $co_query->and('col.collector_id=con.collector_id');
+    $occupation = $_GET['collector_occupation'];
+    $co_query->and('col.collector_occupation LIKE ?', "$occupation");
 }
 
 if (isset($_GET['collector_age'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
-    $age = explode(",", $_GET['collector_age']);
-    if (($age[0] == 18) && ($age[1] == 18)) {
-        $co_query->and('col.collector_age <= 18');
-    } elseif (($age[0] == 18) && ($age[1] == 80)) {
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $co_query->and('col.collector_id=con.collector_id');
+    $age = $_GET['collector_age'];
+    $age = explode(",", $age);
+    if ($age[0]==18 and $age[1]==18) {
         $co_query->and('col.collector_age >= 0');
-    } elseif (($age[0] == 80) && ($age[1] == 80)) {
+        $co_query->and('col.collector_age <= 18');
+    } elseif ($age[0]==18 and $age[1]==80) {
+        $co_query->and('col.collector_age >= 0');
+    } elseif ($age[0]==80 and $age[1]==80) {
         $co_query->and('col.collector_age >= 80');
-    } elseif (($age[0] == 18) && ($age[1] < 80)) {
+    } elseif ($age[0]==18 and $age[1]<80) {
+        $co_query->and('col.collector_age >= 0');
         $co_query->and('col.collector_age <= ?', $age[1]);
-    } elseif (($age[0] > 18) && ($age[1] == 80)) {
+    } elseif ($age[0]>18 and $age[1]==80) {
         $co_query->and('col.collector_age >= ?', $age[0]);
     } else {
         $co_query->and('col.collector_age >= ?', $age[0]);
@@ -68,8 +64,8 @@ if (isset($_GET['collector_age'])) {
 }
 
 if (isset($_GET['collector_language'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $co_query->and('col.collector_id=con.collector_id');
     $co_query->open_group('AND');
     foreach ($_GET['collector_language'] as $language) {
         $co_query->or('col.collector_language LIKE ?', "%$language%");
@@ -78,36 +74,36 @@ if (isset($_GET['collector_language'])) {
 }
 
 if (isset($_GET['consultant_gender'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
+    $co_query->and('co.context_consultants=con.consultant_id');
     $co_query->open_group('AND');
     foreach ($_GET['consultant_gender'] as $gender) {
         $gender = strtoupper($gender);
-        $co_query->or('con.consultant_gender = ?', $gender);
+        $co_query->or('con.consultant_gender LIKE ?', "$gender%");
     }
     $co_query->close_group();
 }
 
 if (isset($_GET['consultant_occupation'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('con.consultant_occupation = ?',
-        $_GET['consultant_occupation']);
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $occupation = $_GET['consultant_occupation'];
+    $co_query->and('con.consultant_occupation LIKE ?', "$occupation");
 }
 
 if (isset($_GET['consultant_age'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
+    $co_query->and('co.context_consultants=con.consultant_id');
     $age = $_GET['consultant_age'];
     $age = explode(",", $age);
-    if ($age[0] == 18 && $age[1] == 18) {
+    if ($age[0]==18 and $age[1]==18) {
         $co_query->and('con.consultant_age >= 0');
         $co_query->and('con.consultant_age <= 18');
-    } elseif ($age[0] == 18 && $age[1] == 80) {
+    } elseif ($age[0]==18 and $age[1]==80) {
         $co_query->and('con.consultant_age >= 0');
-    } elseif ($age[0] == 80 && $age[1] == 80) {
+    } elseif ($age[0]==80 and $age[1]==80) {
         $co_query->and('con.consultant_age >= 80');
-    } elseif ($age[0] == 18 && $age[1] < 80) {
+    } elseif ($age[0]==18 and $age[1]<80) {
         $co_query->and('con.consultant_age >= 0');
         $co_query->and('con.consultant_age <= ?', $age[1]);
-    } elseif ($age[0]>18 && $age[1] == 80) {
+    } elseif ($age[0]>18 and $age[1]==80) {
         $co_query->and('con.consultant_age >= ?', $age[0]);
     } else {
         $co_query->and('con.consultant_age >= ?', $age[0]);
@@ -116,7 +112,7 @@ if (isset($_GET['consultant_age'])) {
 }
 
 if (isset($_GET['consultant_language'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
+    $co_query->and('co.context_consultants=con.consultant_id');
     $co_query->open_group('AND');
     foreach ($_GET['consultant_language'] as $language) {
         $co_query->or('con.consultant_language LIKE ?', "%$language%");
@@ -125,19 +121,20 @@ if (isset($_GET['consultant_language'])) {
 }
 
 if (isset($_GET['consultant_immigration_status'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('con.consultant_age = ?',
-        $_GET['consultant_immigration_status']);
+    $co_query->and('co.context_consultants=con.consultant_id');
+    $immigration_status = $_GET['consultant_immigration_status'];
+    $co_query->and('con.consultant_age = ?', $immigration_status);
 }
 
 if (isset($_GET['context_name'])) {
-    $co_query->and('co.context_event_name = ?', $_GET['context_name']);
+    $name = $_GET['context_name'];
+    $co_query->and('co.context_event_name LIKE ?', "$name");
 }
 
 if (isset($_GET['context_event_type'])) {
     $co_query->open_group('AND');
     foreach ($_GET['context_event_type'] as $event_type) {
-        $co_query->or('co.context_event_type = ?', $event_type);
+        $co_query->or('co.context_event_type LIKE ?', "$event_type");
     }
     $co_query->close_group();
 }
@@ -145,23 +142,25 @@ if (isset($_GET['context_event_type'])) {
 if (isset($_GET['context_time_of_day'])) {
     $co_query->open_group('AND');
     foreach ($_GET['context_time_of_day'] as $time) {
-        $co_query->or('co.context_time = ?', $time);
+        $co_query->or('co.context_time LIKE ?', "$time");
     }
     $co_query->close_group();
 }
 
-if (isset($_GET['context_date_from']) && ($_GET['context_date_from'] != '')) {
-    $co_query->and('co.context_date >= ?', $_GET['context_date_from']);
+if (isset($_GET['context_date_from']) and ($_GET['context_date_from'] != '')) {
+    $fromDate = $_GET['context_date_from'];
+    $co_query->and('co.context_date >= ?', "$fromDate");
 }
 
-if (isset($_GET['context_date_to']) && ($_GET['context_date_to'] != '')) {
-    $co_query->and('co.context_date <= ?', $_GET['context_date_to']);
+if (isset($_GET['context_date_to']) and ($_GET['context_date_to'] != '')) {
+    $toDate = $_GET['context_date_to'];
+    $co_query->and('co.context_date <= ?', "$toDate");
 }
 
 if (isset($_GET['collection_weather'])) {
     $co_query->open_group('AND');
     foreach ($_GET['collection_weather'] as $weather) {
-        $co_query->or('co.context_weather = ?', $weather);
+        $co_query->or('co.context_weather LIKE ?', "$weather");
     }
     $co_query->close_group();
 }
@@ -177,7 +176,7 @@ if (isset($_GET['collection_language'])) {
 if (isset($_GET['collection_place_type'])) {
     $co_query->open_group('AND');
     foreach ($_GET['collection_place_type'] as $place_type) {
-        $co_query->or('co.context_place = ?', $place_type);
+        $co_query->or('co.context_place LIKE ?', "$place_type");
     }
     $co_query->close_group();
 }
@@ -188,8 +187,7 @@ if (isset($_GET['collection_others_present'])) {
         if ($others == 1) {
             $co_query->or('co.context_otherpresent_num = 1');
         } elseif ($others == '2-5') {
-            $co_query->or('co.context_otherpresent_num >= 2');
-            $co_query->or('co.context_otherpresent_num <= 5');
+            $co_query->or('co.context_otherpresent_num >= 2 OR co.context_otherpresent_num <= 5');
         } else {
             $co_query->or('co.context_otherpresent_num > 5');
         }
@@ -210,27 +208,27 @@ if (isset($_GET['collection_description'])) {
     $co_query->and('co.context_description LIKE ?', "%$desc%");
 }
 
-if ((isset($_GET['project_title'])) || (isset($_GET['media']))
-    || (isset($_GET['description']))) {
+if ((isset($_GET['project_title'])) or (isset($_GET['media'])) or (isset($_GET['description']))) {
     $co_query->from('data d');
 }
 
 if (isset($_GET['project_title'])) {
-    $co_query->and('co.context_id = d.context_id');
-    $co_query->and('d.data_project_title = ?', $_GET['project_title']);
+    $co_query->and('co.context_id=d.context_id');
+    $project_title = $_GET['project_title'];
+    $co_query->and('d.data_project_title LIKE ?', "$project_title");
 }
 
 if (isset($_GET['media'])) {
-    $co_query->and('co.context_id = d.context_id');
+    $co_query->and('co.context_id=d.context_id');
     $co_query->open_group('AND');
     foreach ($_GET['media'] as $media) {
-        $co_query->or('d.data_type = ?', $media);
+        $co_query->or('d.data_type LIKE ?', "$media");
     }
     $co_query->close_group();
 }
 
 if (isset($_GET['description'])) {
-    $co_query->and('co.context_id = d.context_id');
+    $co_query->and('co.context_id=d.context_id');
     $desc = $_GET['description'];
     $co_query->and('d.data_description LIKE ?', "%$desc%");
 }
@@ -246,27 +244,28 @@ $statement->bind_result($lat, $long, $total);
 // return results as JSON
 
 while ($statement->fetch()) {
+        #print "Another ";
     $coordinates[] = array(
         'type' => 'Feature',
         'geometry' => array(
             'type' => 'Point',
             'coordinates' => array($lat, $long)
-       ),
+            ), 
         'properties' => array(
             'type' => 'context',
             'total' => $total,
-       ),
-   );
+            ),
+        );
 }
 
 if (isset($coordinates)) {
     echo json_encode(array(
         "type" => "FeatureCollection",
         "features" => $coordinates,
-       ));
+        ));
 } else {
     echo json_encode(array(
         "error" => "No Results Found",
-       ));
+        ));
 }
 ?>

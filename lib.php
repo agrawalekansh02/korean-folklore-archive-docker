@@ -8,6 +8,15 @@ if ($_SERVER['SERVER_NAME']=='localhost'){
 	mysql_connect('localhost', 'root', '');
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfl');
+        function get_connection () {
+        	return new MySQLi(
+            	'localhost',
+            	'root',
+            	'',
+            	'kfl'
+        );
+    }
+
 }
 else if ($_SERVER['SERVER_NAME']=='kfltest.beta.cdh.ucla.edu'){
 // if test

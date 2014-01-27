@@ -74,6 +74,7 @@ KFA.InputForm.Form = Backbone.View.extend({
         this._addMultiSelects(this.multiSelectFields);
         this._addAgeSliders(this.ageSliders);
         this._addDateSelectors();
+        $(".collapsible").collapsible("close");
         return this;
     },
 

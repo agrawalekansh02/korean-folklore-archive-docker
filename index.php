@@ -17,8 +17,10 @@ $content = $cms->content();
 $menu = $cms->content('menu');
 header('Content-Type: text/html; charset=utf-8'); 
 ?>
+<!DOCTYPE HTML>
 <html>
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 	<?php echo $cms->head(); ?> 
 </head>
 <body>

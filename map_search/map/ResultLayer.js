@@ -2,7 +2,7 @@ KFA.Map.ResultLayer = Backbone.View.extend({
 
     initialize: function ($options) {
         var style = new OpenLayers.StyleMap({
-            default: {
+            'default': {
                 pointRadius : '5',
                 fillColor : 'red',
                 strokeColor: 'red',

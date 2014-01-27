@@ -2,7 +2,7 @@ KFA.ResultList.List = Backbone.View.extend({
 
     rpp: 20,
 
-    currentPage: 0,
+    currentPage: 1,
 
     initialize: function () {
         this.$results = this.$el.find(".search-results");
@@ -27,7 +27,7 @@ KFA.ResultList.List = Backbone.View.extend({
             this.$el.find(".next-page").removeClass("active");
         }
 
-        if (this.currentPage > 0) {
+        if (this.currentPage > 1) {
             this.$el.find(".prev-page").addClass("active");
         } else {
             this.$el.find(".prev-page").removeClass("active");
@@ -38,7 +38,7 @@ KFA.ResultList.List = Backbone.View.extend({
         // clear list
         this.$results.empty();
         // if the model is now empty, do nothing
-        this.currentPage = 0;
+        //this.currentPage = 1;
         if (_.isEmpty(this.model.toJSON())) {
             return;
         }
@@ -51,7 +51,7 @@ KFA.ResultList.List = Backbone.View.extend({
     },
 
     _prevPage: function ($e) {
-        if (this.currentPage > 0) {
+        if (this.currentPage > 1) {
             this.currentPage -= 1;
             this._updateList();
         }

@@ -26,6 +26,7 @@
     "openlayers" : "~2.13",
     "backbone" : "~1.1.0",
     "mustache": "~0.7.3",
-    "vc" : "git@bitbucket.org:uclacdh/viewcomponents.git"
+    "vc" : "git@bitbucket.org:uclacdh/viewcomponents.git",
+    "QuB" : "git@bitbucket.org:uclacdh/qb.git"
   }
 }

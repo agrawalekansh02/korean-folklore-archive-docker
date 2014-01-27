@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 
 require_once 'util.php';
 
-require_once 'Factory.php';
-require_once 'QualifiedQuery.php';
-require_once 'SelectQuery.php';
+require_once 'QuB/Factory.php';
+require_once 'QuB/QualifiedQuery.php';
+require_once 'QuB/SelectQuery.php';
 
 require_once '../../lib.php';
 

@@ -17,3 +17,8 @@ cd ..
 rm -rf jQRangeSlider-5.5.0/demo
 cd ..
 
+
+# QB:
+mkdir search/QuB
+mv bower_components/QuB/*.php search/QuB
+

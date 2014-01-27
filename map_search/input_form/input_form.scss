@@ -14,8 +14,16 @@
         max-width: 100px;
     }
 
-    input[type=text], select, button.ui-multiselect {
+
+    input[type=text] {
+        width: 95px;
+    }
+
+    select, button.ui-multiselect {
         width: 100px;
+    }
+
+    input[type=text], select, button.ui-multiselect {
         display: inline-block;
         float: left;
         margin: 5px;

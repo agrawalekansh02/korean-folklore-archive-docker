@@ -418,6 +418,10 @@ while ($statement_count->fetch()) {
 }
 
 $limit = 20;
+if ((isset($_GET['rpp'])) && ($_GET['rpp'] > 0)) {
+    $limit = $_GET['rpp'];
+}
+
 $page = 1;
 if (isset($_GET['page'])) {
     $page = $_GET['page'];

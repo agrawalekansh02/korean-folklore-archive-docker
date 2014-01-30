@@ -33,7 +33,7 @@ array_map(function ($file) use ($cms) {
     'AppRoot',
     'input_form/Form',
     'input_form/Query',
-    'map/ContextList',
+    'map/ContextMonitor',
     'map/Map',
     'map/ResultLayer',
     'result_list/Result',

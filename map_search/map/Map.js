@@ -1,4 +1,9 @@
 KFA.Map.Map = Backbone.View.extend({
+
+    initialize: function ($options) {
+        this.contextMonitor = $options.contextMonitor;
+    },
+
     render: function () {
         var gsat = new OpenLayers.Layer.Google("Google Satellite", {
             type: google.maps.MapTypeId.SATELLITE
@@ -26,12 +31,12 @@ KFA.Map.Map = Backbone.View.extend({
                 bbox.top += 10;
                 bbox.transform('EPSG:900913', 'EPSG:4326');
                 // var bbox = $f.geometry.bounds.clone().transform('EPSG:900913', 'EPSG:4326');
-                self.model.set('context_bbox', 
+                self.contextMonitor.set('bbox', 
                     bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top
                 );
             },
             onUnselect: function ($f) {
-                self.model.set("context_bbox", '');
+                self.contextMonitor.set("bbox", '');
             }
         });
         this._map.addControl(this._selectControl);

@@ -13,10 +13,11 @@ var KFA = {
             });
             searchForm.render();
 
-            var contextList = new KFA.Map.ContextList();
+            var contextMonitor = new KFA.Map.SelectedContexts();
 
             var map = new KFA.Map.Map({
                 model: search,
+                contextMonitor: contextMonitor,
                 el: "#map"
             });
             map.render();
@@ -27,7 +28,7 @@ var KFA = {
 
             var resultList = new KFA.ResultList.List({
                 model: search,
-                contextList: contextList,
+                contextMonitor: contextMonitor,
                 el: "#result-list-wrapper"
             });
             resultList.render();

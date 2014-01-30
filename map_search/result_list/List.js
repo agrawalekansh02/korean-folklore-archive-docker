@@ -6,9 +6,9 @@ KFA.ResultList.List = Backbone.View.extend({
 
     initialize: function ($options) {
         this.$results = this.$el.find(".result-list");
-        this.contextList = $options.contextList;
+        this.contextMonitor = $options.contextMonitor;
         this.listenTo(this.model, "change", this._updateList);
-        this.listenTo(this.contextList, "change", this._updateList);
+        this.listenTo(this.contextMonitor, "change", this._updateList);
     },
 
     _refreshList: function ($data) {
@@ -48,9 +48,10 @@ KFA.ResultList.List = Backbone.View.extend({
         }
 
         var criteria = this.model.toJSON();
-        if (!this.model.get('context_bbox')) {
+        if (!this.contextMonitor.get('bbox')) {
             return;
         }
+        criteria.context_bbox = this.contextMonitor.get('bbox');
 
         criteria.page = this.currentPage;
         criteria.rpp = this.rpp;

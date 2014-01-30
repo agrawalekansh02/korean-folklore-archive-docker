@@ -28,10 +28,12 @@ $count_query = Factory::select('COUNT(*) AS totalRows')
 if (isset($_GET['context_bbox'])) {
     $bbox = $_GET['context_bbox'];
     $bbox = explode(",", $bbox);
-    $polygon = "GeomFromText('Polygon(($bbox[0] $bbox[1],$bbox[0] $bbox[3],
-        $bbox[2] $bbox[3],$bbox[2] $bbox[1],$bbox[0] $bbox[1]))')";
-    $res_query->and("MBRContains($polygon,co.context_spatial_point) = 1");
-    $count_query->and("MBRContains($polygon,co.context_spatial_point) = 1");
+    $polygon = "Polygon(($bbox[0] $bbox[1],$bbox[0] $bbox[3],$bbox[2] $bbox[3],
+        $bbox[2] $bbox[1],$bbox[0] $bbox[1]))";
+    $res_query->and("MBRContains(GeomFromText(?),co.context_spatial_point) = 1"
+        , $polygon);
+    $count_query->and("MBRContains(GeomFromText(?),co.context_spatial_point) = 1"
+        , $polygon);
 }
 
 if ((isset($_GET['collector_gender'])) || (isset($_GET['collector_age'])) 
@@ -471,7 +473,7 @@ $statement->bind_result($city, $date, $description, $projectTitle, $dataId,
 while ($statement->fetch()) {
     //print "Another ";
     $results[] = array(
-        "url" => "../../data/$dataId/$collectorId",
+        "url" => "data/$dataId/$collectorId",
         "city" => $city,
         "date" => $date,
         "description" => $description,

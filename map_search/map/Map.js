@@ -24,13 +24,24 @@ KFA.Map.Map = Backbone.View.extend({
         var self = this;
         this._selectControl = new OpenLayers.Control.SelectFeature($layer._layer, {
             onSelect: function ($f) {
-		var bbox = $f.geometry.bounds.clone();
-		bbox.left -= 10;
-		bbox.bottom -= 10;
+                var cluster = new OpenLayers.Geometry.Collection();
+                cluster.addComponents($f.cluster.map(function ($feature) {
+                        return $feature.geometry;
+                    })
+                );
+
+                // Necessary pre-emptive step because bounds aren't always
+                // calculated automatically
+                cluster.calculateBounds();
+                var bbox = cluster.getBounds();
+
+                // Compensate for any clusters that have only a single feature
+                bbox.left -= 10;
+                bbox.bottom -= 10;
                 bbox.right += 10;
                 bbox.top += 10;
+
                 bbox.transform('EPSG:900913', 'EPSG:4326');
-                // var bbox = $f.geometry.bounds.clone().transform('EPSG:900913', 'EPSG:4326');
                 self.contextMonitor.set('bbox', 
                     bbox.left + ',' + bbox.bottom + ',' + bbox.right + ',' + bbox.top
                 );

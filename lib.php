@@ -9,12 +9,14 @@ if ($_SERVER['SERVER_NAME']=='localhost'){
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfl');
     function get_connection () {
-        return new MySQLi(
+        $mysqli = new MySQLi(
             'localhost',
             'root',
             '',
             'kfl'
         );
+        $mysqli->set_charset('utf8');
+        return $mysqli;
     }
 
 }
@@ -27,12 +29,14 @@ else if ($_SERVER['SERVER_NAME']=='kfltest.beta.cdh.ucla.edu'){
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfltest');
     function get_connection () {
-        return new MySQLi(
+        $mysqli = new MySQLi(
             'localhost',
             'kfl',
             '%=t%pm7HVxc8v5X',
             'kfltest'
         );
+        $mysqli->set_charset('utf8');
+        return $mysqli;
     }
 
 }
@@ -45,12 +49,14 @@ else if ($_SERVER['SERVER_NAME']=='kfl.humnet.ucla.edu'){
 	mysql_query("SET NAMES 'utf8'");
 	mysql_select_db('kfl');
     function get_connection () {
-        return new MySQLi(
+        $mysqli = new MySQLi(
             'localhost',
             'kfl',
             '%=t%pm7HVxc8v5X',
             'kfltest'
         );
+        $mysqli->set_charset('utf8');
+        return $mysqli;
     }
 
 }

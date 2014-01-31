@@ -1,5 +1,7 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('default_charset', 'utf-8');
+
+header('Content-type: application/json; charset=utf-8');
 
 require_once 'util.php';
 
@@ -13,7 +15,8 @@ use QuB\Factory;
 
 $res_query = Factory::select('co.context_city AS city',
     'co.context_date AS date',
-    'SUBSTRING(d.data_description,1,20) AS description',
+//    'SUBSTRING(d.data_description,1,20) AS description',
+    'd.data_description AS description',
     'd.data_project_title AS projectTitle', 'd.data_id AS dataId',
     'd.collector_id AS collectorId')
 ->from('context_test co', 'data d')
@@ -471,12 +474,13 @@ $statement->bind_result($city, $date, $description, $projectTitle, $dataId,
 
 // return results as JSON
 while ($statement->fetch()) {
-    //print "Another ";
+    $split_description = explode(' ', $description);
+    $first_words = array_slice($split_description, 0, 10);
     $results[] = array(
         "url" => "data/$dataId/$collectorId",
         "city" => $city,
         "date" => $date,
-        "description" => $description,
+        "description" => implode(' ', $first_words) . " ...",
         "projectTitle" => $projectTitle
    );
 }

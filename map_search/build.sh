@@ -30,6 +30,7 @@ cd bower_components/openlayers/build
 ./build.py
 mv OpenLayers.js ..
 cd ..
+echo "Cleaning unnecessary OL files"
 rm -rf apidoc_config
 rm -rf build
 rm -rf doc_config
@@ -37,8 +38,9 @@ rm -rf examples
 rm -rf libs
 rm -rf tests
 rm -rf tools
-cd ../../..
+cd ../..
 
+echo "Cleaning up underscore and backbone ..."
 rm -rf bower_components/underscore/docs
 rm -rf bower_components/underscore/test
 

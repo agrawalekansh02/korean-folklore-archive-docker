@@ -3,6 +3,11 @@ bower install
 
 sass --update .
 
+# jquery-ui-multiselect
+mv bower_components/jquery-ui-multiselect/src/jquery.multiselect.js bower_components/jquery-ui-multiselect/
+rm -rf bower_components/jquery-ui-multiselect/src
+rm -rf bower_components/jquery-ui-multiselect/tests
+
 # jQRangeSlider
 echo "Packaging jQRangeSlider"
 rm -rf bower_components/jQRangeSlider-5.5.0

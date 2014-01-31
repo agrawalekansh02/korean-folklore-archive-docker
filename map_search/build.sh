@@ -29,12 +29,18 @@ echo "Building OpenLayers"
 cd bower_components/openlayers/build
 ./build.py
 mv OpenLayers.js ..
+cd ..
 rm -rf apidoc_config
 rm -rf build
 rm -rf doc_config
 rm -rf examples
+rm -rf libs
 rm -rf tests
+rm -rf tools
 cd ../../..
+
+rm -rf bower_components/underscore/docs
+rm -rf bower_components/underscore/test
 
 # Get rid of some files for smaller upload
 rm -rf bower_components/backbone/docs

@@ -26,7 +26,7 @@ function get_file() {
 
 function process_consultant($f, $id=false) {
 	if (!$id) unset($f['consultant_id']);
-	if ($fd = get_file()) {
+	if (($fd = get_file()) && !(empty($fd['name']))) {
 		$f['consultant_file_name']	= $fd['name'];
 		$f['consultant_file_type'] = $fd['type'];
 		$f['consultant_file_size'] = $fd['size'];

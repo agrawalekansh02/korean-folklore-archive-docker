@@ -2,9 +2,12 @@
 global $user;
 if (!$user->auth) {exit('Not authorized');}
 
+$dbConn = get_connection();
+
 function get_set_sql($f) {
+	global $dbConn;
 	foreach ($f as $k => $v) {
-		$sql_str[] = "$k='".mysql_real_escape_string($v)."'";
+		$sql_str[] = "$k='".mysqli_real_escape_string($dbConn, $v)."'";
 	}
 	return implode(', ', $sql_str);
 }
@@ -81,10 +84,11 @@ function get_set_group_sql($f) {
 
 /* retrieve columns for a table */
 function get_columns($table){
+	global $dbConn;
 	$columns = array();
 	$query = "show columns from $table";
-	$result = mysql_query ($query);
-	while ($row = mysql_fetch_array($result)){
+	$result = mysqli_query($dbConn, $query);
+	while ($row = mysqli_fetch_array($result)){
 		$columns[] = $row['Field'];
 	}
 	return $columns;
@@ -113,6 +117,7 @@ $id = (isset($data[1])) ? $data[1] : false; // itemid
 $cid = (isset($data[2])) ? $data[2] : false;  // collectorid
 $action = (isset($data[3])) ? $data[3] : false; // action
 $sql_set = array();
+
 foreach ($_POST as $k => $v) {
 
 /* when checkbox post or alike, make sure the value is NOT empty
@@ -134,6 +139,7 @@ if contain more than one item so that it would not result in an extra comma at t
 	}
 	$sql_set[$k] = $v;
 }
+
 switch($table) {
 	case 'consultant':
 		$sql_set = process_consultant($sql_set, $id);
@@ -153,13 +159,14 @@ switch($table) {
 		$sql_set = process_data($sql_set, $id);
 		break;
 }
+
 if (!$id && $action == "archive"){
 	$sql = "update $table set ${table}_status = 0 where ${table}_id in (". get_set_group_sql($sql_set) . ")" . get_auth_sql();
-	mysql_query($sql);
+	mysqli_query($dbConn, $sql);
 }
 else if (!$id && $action == "activate"){
 	$sql = "update $table set ${table}_status = 1 where ${table}_id in (". get_set_group_sql($sql_set) . ")" . get_auth_sql();
-	mysql_query($sql);
+	mysqli_query($dbConn, $sql);
 }
 else if (!$id) {
 	if ($table != 'collector'){
@@ -172,28 +179,29 @@ else if (!$id) {
 	}
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "insert into $table set " . get_set_sql($f);
-	mysql_query($sql);
-	$id = mysql_insert_id();
+	mysqli_query($dbConn, $sql);
+	$id = mysqli_insert_id($dbConn);
 	// insert the quarter
 	if ($table == 'collector'){
 		$sql = "insert into collector_quarter select ". $id . ", quarter_id from quarter where is_current_quarter = 1";
-		mysql_query($sql);
+		mysqli_query($dbConn, $sql);
 	}
 } 
 else if (!empty($sql_set)) {
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "update $table set ".get_set_sql($f)." where ${table}_id=$id ";
 	if ($action == "role"){
-		mysql_query($sql);
+		mysqli_query($dbConn, $sql);
 	}
 	else{
-		mysql_query($sql. get_auth_sql());
+		mysqli_query($dbConn, $sql. get_auth_sql());
 	}
 }
 else{
 	$sql = "delete from $table where ${table}_id=$id " . get_auth_sql();
-	mysql_query($sql);
+	mysqli_query($dbConn, $sql);
 }
+
 if ($action == "archive"){
 	header("Location: ".HOST."admin");
 }
@@ -206,6 +214,7 @@ else if ($action == "role"){
 else{	//admin, stay on the same page
 	header("Location: ".HOST."dashboard/".$data[2]);
 }
+
 exit();
 ?>
 <pre>

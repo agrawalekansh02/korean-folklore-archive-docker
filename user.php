@@ -8,9 +8,31 @@ class User {
             $id = substr($_COOKIE['kfl'], 32);
             if (get_token($id) == $md5) {
                 $this->auth = $id;
-                $sql = "select * from collector where collector_sid = '$id' limit 1";
-                $result = mysql_query($sql);
-                if ($row = mysql_fetch_assoc($result)) {
+                $dbConn = get_connection();
+                $sql = "SELECT 
+                            collector_id, 
+                            collector_last_name, 
+                            collector_first_name,
+                            collector_initial,
+                            collector_sid,
+                            collector_email,
+                            collector_street,
+                            collector_city,
+                            collector_state,
+                            collector_zipcode,
+                            collector_country,
+                            collector_age,
+                            collector_dob,
+                            collector_gender,
+                            collector_marital_status,
+                            collector_occupation,
+                            collector_edu_level,
+                            collector_heritage,
+                            collector_language,
+                            collector_status
+                        FROM collector WHERE collector_sid = '$id' LIMIT 1";
+                $result = mysqli_query($dbConn, $sql);
+                if ($row = mysqli_fetch_assoc($result)) {
                     foreach ($row as $k => $v) {
                         $this->data[preg_replace('/collector_/','',$k)] = $v;
                     }

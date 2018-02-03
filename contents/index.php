@@ -1,5 +1,6 @@
 <?php 
-$cms->title = 'UCLA Korean Folklore Archive';$user = check_auth(); 
+$cms->title = 'UCLA Korean Folklore Archive';
+$user = check_auth(); 
 ?>
 <div style="margin-left:520px" class="small-label">
 	<form id="role_form" action="handler/collector/<?php echo $user->get('id');?>/role" method="post">

@@ -5,9 +5,9 @@ include_once('lib.php');
 
 //
 $query = "select t1.data_file from data t1, collector_quarter t2 where t1.collector_id = t2.collector_id and t2.quarter_id = 10 and t1.data_file > 0";
-$result = mysql_query($query);
+$result = mysqli_query($dbConn, $query);
 $data_array = array();
-while ($row = mysql_fetch_array($result)){
+while ($row = mysqli_fetch_array($result)){
 	$data_array[$row['data_file']] = 1;
 }
 $query = "SELECT t3.collector_first_name, t3.collector_last_name, t1.consultant_id, t1.consultant_first_name, t1.consultant_last_name, t1.consultant_consent_form
@@ -15,10 +15,10 @@ FROM consultant t1, collector_quarter t2, collector t3
 WHERE t1.collector_id = t3.collector_id
 AND t1.collector_id = t2.collector_id
 AND t2.quarter_id =10";
-$result = mysql_query($query);
+$result = mysqli_query($dbConn, $query);
 $db_file_array = array();
 $missing_file_array = array();
-while($row = mysql_fetch_array($result)){
+while($row = mysqli_fetch_array($dbConn, $result)){
 	if ($row['consultant_consent_form'] > 0){
 		$db_file_array[$row['consultant_consent_form']]= array('consultant_id'=>$row['consultant_id'], 'collector_name'=>$row['collector_last_name'].",".$row['collector_first_name'], 'consultant_name'=>$row['consultant_last_name'].", ". $row['consultant_first_name']);
 	}

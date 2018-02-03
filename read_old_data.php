@@ -10,32 +10,32 @@ $conte = 297;
 $d = 427;
 
 $query = "delete from collector where collector_id >= $col";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "delete from consultant where consultant_id >= $cons";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "delete from context where context_id >= $conte";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "delete from data where data_id >= $d";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "delete from collector_quarter where collector_id >= 68";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 
 //reset index
 $query = "alter table collector auto_increment = $col";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "alter table consultant auto_increment = $cons";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "alter table context auto_increment = $conte";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 $query = "alter table data auto_increment = $d";
-mysql_query($query);
+mysqli_query($dbConn, $query);
 
 
 // get quarter id from quarter table
-$query_q = "select * from quarter";
-$result_q = mysql_query($query_q);
+$query_q = "select quarter_id, quarter_short_name, is_current_quarter from quarter";
+$result_q = mysqli_query($dbConn, $query_q);
 $quarter_array = array();
-while($row_q = mysql_fetch_array($result_q)){
+while($row_q = mysqli_fetch_array($result_q)){
 	$quarter_array[$row_q['quarter_short_name']] = $row_q['quarter_id'];
 }
 //reset auto-increment value
@@ -50,7 +50,7 @@ foreach ($f1 as $k=>$f){
 	$quarter = $quarter_array[substr($f,0,3)];
 
 	// wrap in transaction so that have the right last insert id
-	mysql_query("START TRANSACTION");
+	mysqli_query($dbConn, "START TRANSACTION");
 	// insert into data table
 	foreach($data->records->row as $row){
 		$sql_data = "insert ignore data values (null, ";
@@ -63,12 +63,12 @@ foreach ($f1 as $k=>$f){
 			$col++;
 		}
 		$sql_data = substr($sql_data, 0, -1) . ")";
-		mysql_query($sql_data);
+		mysqli_query($dbConn, $sql_data);
 		echo $sql_data. "<br>";
 	}
-	mysql_query("COMMIT");
+	mysqli_query($dbConn, "COMMIT");
 
-	mysql_query("START TRANSACTION");
+	mysqli_query($dbConn, "START TRANSACTION");
 	// insert into collector table
 	$collector_ids_array = array();// array to store old collotors
 	foreach($collectors->records->row as $row){
@@ -86,29 +86,29 @@ foreach ($f1 as $k=>$f){
 			$col++;
 		}
 		$sql_collector .= "0)";
-		mysql_query($sql_collector);
+		mysqli_query($dbConn, $sql_collector);
 
-		if (mysql_insert_id()>0){
-			$new_collector_id = mysql_insert_id();
+		if (mysqli_insert_id()>0){
+			$new_collector_id = mysqli_insert_id();
 		}
 		else{ // map to existing record to column 4
 			$query_tmp1 = "select collector_id from collector where collector_sid = '". $sid . "'";
-			$result_tmp1 = mysql_query($query_tmp1);
-			$row_tmp1 = mysql_fetch_array($result_tmp1);
+			$result_tmp1 = mysqli_query($query_tmp1);
+			$row_tmp1 = mysqli_fetch_array($result_tmp1);
 			$new_collector_id = $row_tmp1['collector_id'];
 		}
 		$collector_ids_array['w'.(string)$row->column[0]]=$new_collector_id;
 
 		// insert into collector_quarter table
 		$query_cq = "insert ignore collector_quarter values (".$new_collector_id. ", ". $quarter.")";
-		mysql_query($query_cq);
+		mysqli_query($query_cq);
 
 		echo $sql_collector . "<br>";
 		echo $query_cq . "<br>";
 	}
-	mysql_query("COMMIT");
+	mysqli_query($dbConn, "COMMIT");
 
-	mysql_query("START TRANSACTION");
+	mysqli_query("START TRANSACTION");
 	// insert into consultant table
 	$consultant_ids_array = array();// array to store old consultants
 	foreach($consultants->records->row as $row){
@@ -124,11 +124,11 @@ foreach ($f1 as $k=>$f){
 			$col++;
 		}
 		$sql_consultant = substr($sql_consultant, 0, -1) . ")";
-		mysql_query($sql_consultant);
+		mysqli_query($dbConn, $sql_consultant);
 		echo $sql_consultant . "<br>";
-		$consultant_ids_array['w'.(string)$row->column[0]]=mysql_insert_id();
+		$consultant_ids_array['w'.(string)$row->column[0]]=mysqli_insert_id($dbConn);
 	}
-	mysql_query("COMMIT");
+	mysqli_query($dbConn, "COMMIT");
 
 
 	// retrive consultant context table
@@ -150,7 +150,7 @@ foreach ($f1 as $k=>$f){
 		$contexts_consultants_ids_array['cc'.(string)$key]=$value;
 	}
 
-	mysql_query("START TRANSACTION");
+	mysqli_query($dbConn, "START TRANSACTION");
 	// insert into context table
 	$context_ids_array = array();// array to store old consultants
 	foreach($contexts->records->row as $row){
@@ -170,30 +170,30 @@ foreach ($f1 as $k=>$f){
 			$col++;
 		}
 		$sql_context .= array_key_exists('cc'.$cc, $contexts_consultants_ids_array)?"'".$consultant_ids_array['w'.$contexts_consultants_ids_array['cc'.$cc]]."')":"null)";
-		mysql_query($sql_context);
+		mysqli_query($dbConn, $sql_context);
 		echo $sql_context . "<br>";
-		$context_ids_array['w'.(string)$row->column[0]]=mysql_insert_id();
+		$context_ids_array['w'.(string)$row->column[0]]=mysqli_insert_id($dbConn);
 	}
-	mysql_query("COMMIT");
+	mysqli_query($dbConn, "COMMIT");
 
 	echo " done with importing table " . $f . "<br> next need to update data table";
 
 	// update data table
 	$query = "select data_id, collector_id, consultant_id, context_id from data where data_id >= $d";
-	$result = mysql_query($query);
-	while($row = mysql_fetch_array($result)){
+	$result = mysqli_query($dbConn, $query);
+	while($row = mysqli_fetch_array($result)){
 		$collector_id = array_key_exists('w'.$row['collector_id'], $collector_ids_array)?$collector_ids_array['w'.$row['collector_id']]:null;
 		$consultant_id = array_key_exists('w'.$row['consultant_id'], $consultant_ids_array)?$consultant_ids_array['w'.$row['consultant_id']]:null;
 		$context_id = array_key_exists('w'.$row['context_id'], $context_ids_array)?$context_ids_array['w'.$row['context_id']]:null;
 		$q1= "update data set collector_id = '".$collector_id . "', consultant_id = '" . $consultant_id . "', context_id = '" . $context_id . "' where data_id = " . $row['data_id'];
-		mysql_query($q1);
+		mysqli_query($dbConn, $q1);
 		echo $q1 . "<br>";
 	}
 	echo " done with update data table for $f <br> next retrieve the new index for table";
 
 	$query = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name =  'data'";
-	$result = mysql_query($query);
-	$row = mysql_fetch_array($result);
+	$result = mysqli_query($dbConn, $query);
+	$row = mysqli_fetch_array($result);
 	$d = $row['AUTO_INCREMENT'];
 
 	echo " Done with updating new index for table data and it is ready for next update for data table indexes";

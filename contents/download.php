@@ -6,8 +6,10 @@ if (count($data) != 2) exit('Invalid url');
 $table = $data[0];
 $id = $data[1];
 
-$result = mysql_query("select * from $table where ${table}_id=$id" . get_auth_sql());
-if (!($row = mysql_fetch_assoc($result))) exit("Invalid $table");
+$dbConn = get_connection();
+
+$result = mysqli_query($dbConn, "select * from $table where ${table}_id=$id" . get_auth_sql());
+if (!($row = mysqli_fetch_assoc($result))) exit("Invalid $table");
 
 
 // To accommodate old data used file name

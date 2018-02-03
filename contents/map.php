@@ -42,18 +42,15 @@ array_map(function ($file) use ($cms) {
     'result_list/SummaryItem',
 ));
 
-
-
 $cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
 
+$dbConn = get_connection();
 
-?>
+$query = "SELECT MIN(context_date) AS min_date, MAX(context_date) AS max_date "
+            . " FROM context WHERE context_date != '0000-00-00' AND context_date IS NOT NULL";
+$rsc = mysqli_query($dbConn, $query) or die("SQL Error: ". mysqli_error());
+$result = mysqli_fetch_assoc($rsc);
 
-<?php
-    $query = "SELECT MIN(context_date) AS min_date, MAX(context_date) AS max_date "
-                . " FROM context WHERE context_date != '0000-00-00' AND context_date IS NOT NULL";
-    $rsc = mysql_query($query) or die("SQL Error: ". mysql_error());
-    $result = mysql_fetch_assoc($rsc);
 ?>
 <script type="text/javascript">
     var CONSTANTS = {

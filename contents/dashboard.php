@@ -12,25 +12,66 @@ function getLink() {
 
 
 $user = check_auth();
+$dbConn = get_connection();
 
 $collector_id = $user->get('id');
 if ($user->is_admin() && isset($data[0]) && $data[0] > 0) {
 	$collector_id = $data[0];
 }
 
-
-$collector_result = mysql_query("select * from collector where collector_id=$collector_id");
-if ($row=mysql_fetch_assoc($collector_result)) foreach ($row as $k => $v) $$k = $v;
+$collector_sql = "SELECT
+						collector_id,
+						collector_first_name,
+						collector_last_name,
+						collector_email,
+						collector_street,
+						collector_city,
+						collector_state,
+						collector_zipcode,
+						collector_country,
+						collector_dob,
+						collector_age,
+						collector_gender,
+						collector_marital_status,
+						collector_occupation,
+						collector_edu_level,
+						collector_heritage,
+						collector_language
+					FROM collector WHERE collector_id=$collector_id";
+$collector_result = mysqli_query($dbConn, $collector_sql);
+if ($row=mysqli_fetch_assoc($collector_result)) foreach ($row as $k => $v) $$k = $v;
 else {echo 'Invalid Collector'; return false;}
 
 $data_result_array = array();
 $context_data_array = array();
 $consultant_data_array = array();
 
-$context_result = mysql_query("select * from context where collector_id=$collector_id");
-$consultant_result = mysql_query("select * from consultant where collector_id=$collector_id");
-$data_result = mysql_query("select * from data where collector_id=$collector_id");
-while($row=mysql_fetch_assoc($data_result)){
+$context_sql = "SELECT 
+					context_id,
+					context_event_name,
+					context_date,
+					context_time,
+					context_description
+				FROM context WHERE collector_id=$collector_id";
+$context_result = mysqli_query($dbConn, $context_sql);
+
+$consultant_sql = "SELECT
+						consultant_id,
+						consultant_first_name,
+						consultant_last_name
+					FROM consultant WHERE collector_id=$collector_id";
+$consultant_result = mysqli_query($dbConn, $consultant_sql);
+
+$data_sql  = "SELECT
+				data_id,
+				data_description,
+				data_file_name,
+				data_project_title,
+				data_description
+			FROM data WHERE collector_id=$collector_id";
+$data_result = mysqli_query($dbConn, $data_sql);
+
+while($row=mysqli_fetch_assoc($data_result)){
 	array_push($data_result_array, $row);
 	if (isset($row['context_id'])){
 		array_push($context_data_array, $row['context_id']);
@@ -73,7 +114,7 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 			<table>
 			<?php 
 			// Populate the contexts that are associated with this collector
-			while($row=mysql_fetch_assoc($context_result)){
+			while($row=mysqli_fetch_assoc($context_result)){
 				echo "<tr>";
 				echo "<td>";
 				// get context_id from $context_result
@@ -122,7 +163,7 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 			<table>
 			<?php 
 			// Populate consultants that are associated with this collector	
-			while($row = mysql_fetch_assoc($consultant_result)){
+			while($row = mysqli_fetch_assoc($consultant_result)){
 				echo "<tr>";
 				echo "<td>";
 				// take consultant id from consultant_result list

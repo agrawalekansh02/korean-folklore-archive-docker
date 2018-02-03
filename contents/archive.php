@@ -2,17 +2,34 @@
 $user = check_auth();
 if (!$user->is_admin()) exit('Not authorized.');
 
+$dbConn = get_connection();
+
 $cms->script[] = "$(function(){ $('.tablesorter').tablesorter(); });";
 $cms->js[] = "js/jquery.tablesorter.js";
 $cms->css[] = "css/blue/style.css";
 
-$result = mysql_query("select t1.*, t3.quarter_short_name from collector t1, collector_quarter t2, quarter t3 where t1.collector_id = t2.collector_id and t2.quarter_id = t3.quarter_id and t1.collector_status = 0 order by t1.collector_first_name, t1.collector_last_name, t1.collector_sid");
+$sql = "SELECT 
+			c.collector_id,
+			c.collector_last_name,
+			c.collector_first_name,
+			c.collector_sid,
+			c.collector_status, 
+			q.quarter_short_name 
+		FROM collector AS c
+        JOIN collector_quarter AS cq
+        	ON c.collector_id = cq.collector_id
+            AND c.collector_status = 0 
+        JOIN quarter AS q 
+        	ON  cq.quarter_id = q.quarter_id 
+		ORDER BY c.collector_first_name, c.collector_last_name, c.collector_sid";
+
+$result = mysqli_query($dbConn, $sql);
 $data = array();
-while ($row=mysql_fetch_assoc($result)) $data[] = $row;
+while ($row=mysqli_fetch_assoc($result)) $data[] = $row;
 
 ?>
 <h2>ARCHIVED COLLECTORS</h2>
-<form name="form1" id="archive_form" enctype="multipart/form-data" method="post" action="handler/collector/<?php echo $collector_id;?>//activate">
+<form name="form1" id="archive_form" enctype="multipart/form-data" method="post" action="handler/collector/<?php echo isset($collector_id) ? $collector_id : "";?>//activate">
 <table class="tablesorter">
 <thead>
 <tr> 

@@ -27,5 +27,3 @@ if (isset($_POST['search'])) {
 		echo "<div id='d123'><ol>$end_result</ol></div>";
 	}
 }
-
-?>

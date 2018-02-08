@@ -22,4 +22,3 @@ $cookie = get_token($eppn) . $eppn;
 setcookie('kfl', $cookie, time() + 3600*12,'/');
 header("Location:" . HOST . 'dashboard.php');
  
-?>

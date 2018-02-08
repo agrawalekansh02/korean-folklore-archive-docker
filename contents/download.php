@@ -36,4 +36,3 @@ echo fread($handle, 8192);
 }
 fclose($handle);
 exit(0);
-?>

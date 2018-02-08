@@ -525,8 +525,6 @@ if (strstr($context_event_type, "General Observation")){
                 <tr> 
                   <td class="unnamed1" style="text-align: center;"> 
                     <input type="submit" class="unnamed1 btnSubmit">&nbsp;&nbsp;&nbsp;
-					<?php
-					?>
                     <a href="dashboard/<?php echo $data[1];?>">Cancel</a>&nbsp;&nbsp;&nbsp;
                   </td>
                 </tr>

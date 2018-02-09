@@ -263,4 +263,4 @@ if (isset($coordinates)) {
         "error" => "No Results Found",
        ));
 }
-?>
+

@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-
 require_once 'util.php';
 
 require_once 'QuB/Factory.php';
@@ -13,25 +11,36 @@ use QuB\Factory;
 
 $co_query = Factory::select('X(co.context_spatial_point) AS lng',
     'Y(co.context_spatial_point) AS lat', 'COUNT(*) AS total')
-->from('context_test co')
-->where("co.context_spatial_point IS NOT NULL")
-->group_by('co.context_spatial_point');
+    ->from('data d', 'context co') 
+    ->where('d.context_id = co.context_id')
+        ->and("co.context_spatial_point IS NOT NULL")
+    ->group_by('d.context_id');
 
-if ((isset($_GET['collector_gender'])) || (isset($_GET['collector_age']))
-    || (isset($_GET['collector_occupation']))
-    || (isset($_GET['collector_language']))) {
-    $co_query->from('collector col', 'consultant con');
-} elseif ((isset($_GET['consultant_gender']))
-    || (isset($_GET['consultant_age']))
-    || (isset($_GET['consultant_occupation']))
-    || (isset($_GET['consultant_language']))
-    || (isset($_GET['consultant_immigration_status']))) {
+$has_consultant_fields = array_filter(
+    array_keys($_GET),
+    function ($key) {
+        return strpos($key, 'consultant_') === 0;
+    }
+); 
+
+if ($has_consultant_fields) {
     $co_query->from('consultant con');
+    $co_query->and('d.consultant_id = con.consultant_id');
+}
+
+$has_collector_fields = array_filter(
+    array_keys($_GET),
+    function ($key) {
+        return strpos($key, 'collector_') === 0;
+    }
+);
+
+if ($has_collector_fields) {
+    $co_query->from('collector col');
+    $co_query->and('d.collector_id = col.collector_id');
 }
 
 if (isset($_GET['collector_gender'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
     $co_query->open_group('AND');
     foreach ($_GET['collector_gender'] as $gender) {
         $gender = strtoupper($gender);
@@ -41,15 +50,11 @@ if (isset($_GET['collector_gender'])) {
 }
 
 if (isset($_GET['collector_occupation'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
     $co_query->and('col.collector_occupation = ?',
         $_GET['collector_occupation']);
 }
 
 if (isset($_GET['collector_age'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
     $age = explode(",", $_GET['collector_age']);
     if (($age[0] == 18) && ($age[1] == 18)) {
         $co_query->and('col.collector_age <= 18');
@@ -68,8 +73,6 @@ if (isset($_GET['collector_age'])) {
 }
 
 if (isset($_GET['collector_language'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
-    $co_query->and('col.collector_id = con.collector_id');
     $co_query->open_group('AND');
     foreach ($_GET['collector_language'] as $language) {
         $co_query->or('col.collector_language LIKE ?', "%$language%");
@@ -78,7 +81,6 @@ if (isset($_GET['collector_language'])) {
 }
 
 if (isset($_GET['consultant_gender'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
     $co_query->open_group('AND');
     foreach ($_GET['consultant_gender'] as $gender) {
         $gender = strtoupper($gender);
@@ -88,13 +90,11 @@ if (isset($_GET['consultant_gender'])) {
 }
 
 if (isset($_GET['consultant_occupation'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
     $co_query->and('con.consultant_occupation = ?',
         $_GET['consultant_occupation']);
 }
 
 if (isset($_GET['consultant_age'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
     $age = $_GET['consultant_age'];
     $age = explode(",", $age);
     if ($age[0] == 18 && $age[1] == 18) {
@@ -116,7 +116,6 @@ if (isset($_GET['consultant_age'])) {
 }
 
 if (isset($_GET['consultant_language'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
     $co_query->open_group('AND');
     foreach ($_GET['consultant_language'] as $language) {
         $co_query->or('con.consultant_language LIKE ?', "%$language%");
@@ -125,7 +124,6 @@ if (isset($_GET['consultant_language'])) {
 }
 
 if (isset($_GET['consultant_immigration_status'])) {
-    $co_query->and('co.context_consultants = con.consultant_id');
     $co_query->and('con.consultant_age = ?',
         $_GET['consultant_immigration_status']);
 }
@@ -212,16 +210,13 @@ if (isset($_GET['collection_description'])) {
 
 if ((isset($_GET['project_title'])) || (isset($_GET['media']))
     || (isset($_GET['description']))) {
-    $co_query->from('data d');
 }
 
 if (isset($_GET['project_title'])) {
-    $co_query->and('co.context_id = d.context_id');
     $co_query->and('d.data_project_title = ?', $_GET['project_title']);
 }
 
 if (isset($_GET['media'])) {
-    $co_query->and('co.context_id = d.context_id');
     $co_query->open_group('AND');
     foreach ($_GET['media'] as $media) {
         $co_query->or('d.data_type = ?', $media);
@@ -230,7 +225,6 @@ if (isset($_GET['media'])) {
 }
 
 if (isset($_GET['description'])) {
-    $co_query->and('co.context_id = d.context_id');
     $desc = $_GET['description'];
     $co_query->and('d.data_description LIKE ?', "%$desc%");
 }
@@ -269,4 +263,4 @@ if (isset($coordinates)) {
         "error" => "No Results Found",
        ));
 }
-
+?>

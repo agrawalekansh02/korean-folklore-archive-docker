@@ -19,12 +19,12 @@ $res_query = Factory::select('co.context_city AS city',
     'd.data_description AS description',
     'd.data_project_title AS projectTitle', 'd.data_id AS dataId',
     'd.collector_id AS collectorId')
-->from('context_test co', 'data d')
+->from('context co', 'data d')
 ->where("co.context_id = d.context_id AND
     co.context_spatial_point IS NOT NULL");
 
 $count_query = Factory::select('COUNT(*) AS totalRows')
-->from('context_test co', 'data d')
+->from('context co', 'data d')
 ->where("co.context_id = d.context_id AND
     co.context_spatial_point IS NOT NULL");
 
@@ -477,7 +477,7 @@ while ($statement->fetch()) {
     $split_description = explode(' ', $description);
     $first_words = array_slice($split_description, 0, 10);
     $results[] = array(
-        "url" => "data/$dataId/$collectorId",
+        "url" => "anonymized_data/$dataId",
         "city" => $city,
         "date" => $date,
         "description" => implode(' ', $first_words) . " ...",
@@ -495,4 +495,4 @@ if (isset($results)) {
         "error" => "No Results Found",
        ));
 }
-
+?>

@@ -12,5 +12,3 @@ bower_components
 
 # Project-specific (because we are using SCSS)
 *.css
-
-search/QuB

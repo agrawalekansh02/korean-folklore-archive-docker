@@ -23,9 +23,9 @@ if (isset($data[0]) && !empty($data[0])) {
     $action .= implode("/", $actionArray);
   }
 ?>
-<form name="form1" enctype="multipart/form-data" method="post" action="<?php echo $action; ?>;?>">
+<form name="form1" enctype="multipart/form-data" method="post" action="<?php echo $action; ?>">
 
-<input name="consultant_id" type="hidden" value="<?php echo isset($consultant_is) ? $consultant_id : ''; ?>">
+<input name="consultant_id" type="hidden" value="<?php echo isset($consultant_id) ? $consultant_id : ''; ?>">
 
 <table width="100%" border="0">
 	<tr valign="bottom" align="left"> 

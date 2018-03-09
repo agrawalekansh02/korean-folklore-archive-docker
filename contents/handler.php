@@ -198,8 +198,29 @@ else if (!empty($sql_set)) {
 	}
 }
 else{
-	$sql = "delete from $table where ${table}_id=$id " . get_auth_sql();
-	mysqli_query($dbConn, $sql);
+
+	$safeToDelete = true;
+	switch($table) {
+		case 'consultant':
+			$sql = "SELECT context_id FROM context where context_consultants = $id LIMIT 1";
+			$result = mysqli_query($dbConn, $sql);
+			if(mysqli_num_rows($result) > 0){
+				$safeToDelete = false;
+			}
+			break;
+		case 'context':
+			$sql = "SELECT data_id FROM data where context_id = $id LIMIT 1";
+			$result = mysqli_query($dbConn, $sql);
+			if(mysqli_num_rows($result) > 0){
+				$safeToDelete = false;
+			}
+			break;
+	}
+
+	if($safeToDelete){
+		$sql = "delete from $table where ${table}_id=$id " . get_auth_sql();
+		mysqli_query($dbConn, $sql);
+	}
 }
 
 if ($action == "archive"){

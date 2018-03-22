@@ -5,20 +5,30 @@
  */
 
 $(document).ready (function () {
-	$('.delete-link').click (function () {
+	$('.delete-link').click (function (e) {
+
+		var thisItem = $(this).attr("data-name");
+		var restrictionItem = $(this).attr("data-restriction");
+
 		switch($(this).attr("type")){
 			case 'data':
 				return confirm ("Are you sure you want to delete " +$(this).attr("type")+" "+ $(this).attr ("title") + "?") ;
 				break;
 			case 'context':
-				if ($(this).attr("title")==1)
-					return confirm ("This " + $(this).attr("type") + " has data associated with it.  Are you sure you want to delete this " +$(this).attr("type")+ "?");
+				if ($(this).attr("title")==1){
+					e.preventDefault();
+					e.stopPropagation();
+					return alert ("Unable to delete " + thisItem + " as it is being used with " + restrictionItem + ".  Delete or update associated " + restrictionItem + " before deleting " + thisItem);
+				}
 				else
 					return confirm ("Are you sure you want to delete " +$(this).attr("type")+"?") ;
 				break;
 			case 'consultant':
-				if ($(this).attr("title")==1)
-					return confirm ("This " + $(this).attr("type") + " has data associated with it.  Are you sure you want to delete this " +$(this).attr("type")+ "?");
+				if ($(this).attr("title")==1){
+					e.preventDefault();
+					e.stopPropagation();
+					return alert ("Unable to delete " + thisItem + " as it is being used with " + restrictionItem + ".  Delete or update associated " + restrictionItem + " before deleting " + thisItem);
+				}
 				else
 					return confirm ("Are you sure you want to delete " +$(this).attr("type")+"?") ;
 				break;

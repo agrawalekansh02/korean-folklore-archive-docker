@@ -44,6 +44,7 @@ else {echo 'Invalid Collector'; return false;}
 
 $data_result_array = array();
 $context_data_array = array();
+$context_result_array = array();
 $consultant_data_array = array();
 
 $context_sql = "SELECT 
@@ -51,9 +52,20 @@ $context_sql = "SELECT
 					context_event_name,
 					context_date,
 					context_time,
-					context_description
+					context_description,
+					context_consultants
 				FROM context WHERE collector_id=$collector_id";
 $context_result = mysqli_query($dbConn, $context_sql);
+
+while($row=mysqli_fetch_assoc($context_result)){
+	array_push($context_result_array, $row);
+	if (isset($row['context_consultants'])){
+		$consultsnts_list = explode(',', $row['context_consultants']);
+		foreach ($consultsnts_list as $cons) {
+			$consultant_data_array[$cons] = $row['context_event_name'];
+		}
+	}
+}
 
 $consultant_sql = "SELECT
 						consultant_id,
@@ -67,18 +79,21 @@ $data_sql  = "SELECT
 				data_description,
 				data_file_name,
 				data_project_title,
-				data_description
+				data_description,
+				context_id
 			FROM data WHERE collector_id=$collector_id";
 $data_result = mysqli_query($dbConn, $data_sql);
 
 while($row=mysqli_fetch_assoc($data_result)){
 	array_push($data_result_array, $row);
 	if (isset($row['context_id'])){
-		array_push($context_data_array, $row['context_id']);
+		$context_data_array[$row['context_id']] = $row['data_project_title'];
 	}
-	if (isset($row['consultant_id'])){
+	//not using consultant_id in data because when switching between a consultant to none, data doesnt get removed from db,
+	//so, not using this until that bug is fixed.
+	/*if (isset($row['consultant_id'])){
 		array_push($consultant_data_array, $row['consultant_id']);
-	}
+	}*/
 }
 
 $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
@@ -114,13 +129,14 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 			<table>
 			<?php 
 			// Populate the contexts that are associated with this collector
-			while($row=mysqli_fetch_assoc($context_result)){
+			foreach ($context_result_array as $k => $row){
 				echo "<tr>";
 				echo "<td>";
 				// get context_id from $context_result
 				$context_id=$row['context_id'];
 				$flag=0; // if there is associate data with this context, flag turn to 1
-				if (in_array($context_id, $context_data_array)){
+				$restrictionItem = isset($context_data_array[$context_id]) ? $context_data_array[$context_id] : false;
+				if ($restrictionItem){
 					$flag = 1;
 				}
 				// fetch info about that context from db
@@ -138,7 +154,8 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 				  <t>Description: <?php  $subcontext = substr($row['context_description'], 0, 50); echo trim($subcontext), "..."; ?> <br>
 				</td>
 				<td>
-				<a href="handler/context/<?php echo $context_id; if ($user->is_admin()) echo '/'.$collector_id; ?>/delete" class="delete-link" title="<?php echo $flag;?>" type="context">Delete</a> 
+				<a href="handler/context/<?php echo $context_id; if ($user->is_admin()) echo '/'.$collector_id; ?>/delete" class="delete-link" title="<?php echo $flag;?>" type="context"
+					data-name="<?php echo $row['context_event_name'];?>" data-restriction="<?php echo $restrictionItem; ?>">Delete</a> 
 				</td>
 			<?php 
 				echo "</tr>";
@@ -169,12 +186,14 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 				// take consultant id from consultant_result list
 				$consultant_id=$row['consultant_id'];
 				$flag=0; // if there is associate data with this context, flag turn to 1
-				if (in_array($consultant_id, $consultant_data_array)){
+				$restrictionItem = isset($consultant_data_array[$consultant_id]) ? $consultant_data_array[$consultant_id] : false;
+				if ($restrictionItem){
 					$flag = 1;
 				}
+				$fullname = $row['consultant_first_name'] . ', ' . $row['consultant_last_name'];
 				// create link to consultant with corresponding consultant id
 			?>	<strong>
-				<a href="consultant/<?php echo $consultant_id;?>/<?php echo $collector_id;?>" target="_self"><?php echo getLink($row['consultant_first_name'], $row['consultant_last_name']);?> </a>
+				<a href="consultant/<?php echo $consultant_id;?>/<?php echo $collector_id;?>" target="_self"><?php echo getLink($fullname);?> </a>
 				<?php
 				if ($flag){
 					 echo "<font color=red>*</font>";
@@ -184,7 +203,7 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 				<br/>
 				</td>
 				<td>
-				<a href="handler/consultant/<?php echo $consultant_id; if ($user->is_admin()) echo '/'.$collector_id;?>/delete" class="delete-link" title="<?php echo $flag;?>" type="consultant">Delete</a>
+				<a href="handler/consultant/<?php echo $consultant_id; if ($user->is_admin()) echo '/'.$collector_id;?>/delete" class="delete-link" title="<?php echo $flag;?>" type="consultant" data-name="<?php echo $fullname; ?>" data-restriction="<?php echo $restrictionItem; ?>">Delete</a>
 				</td>
 			<?php 	
 			  echo "</tr>";

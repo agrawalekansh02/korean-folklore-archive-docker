@@ -161,3 +161,29 @@ p.display-text{
 	font-size: 14px;
 	color:#000;
 }
+
+/*--------- [  Reports ] -------------*/
+
+.reports{
+	vertical-align: bottom;
+	border-collapse: collapse;
+	width: 100%;
+}
+.reports th, .reports td{
+	text-align: center;
+    vertical-align: middle;
+    padding: 5px 2px;
+    border:1px solid #f1f1f1;
+}
+.reports thead th{ 
+	font-size: .9em;
+	color: black;
+	background-color: #e0e0e0; 
+	border-color: #d3d3d3;
+}
+.reports tbody tr:nth-child(even){ 
+	background-color: #f1f1f1; 
+}
+#reports_form, .report_header{
+	display: inline-block;
+}

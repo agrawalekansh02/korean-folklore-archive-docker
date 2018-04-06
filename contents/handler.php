@@ -177,6 +177,11 @@ else if (!$id) {
 			$sql_set['collector_id'] = $user->get('id');
 		}
 	}
+
+	if ($table == 'consultant' || $table == 'context' || $table == 'data'){
+		$sql_set[$table.'_quarter_created'] = get_current_quarter();
+	}
+
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "insert into $table set " . get_set_sql($f);
 	mysqli_query($dbConn, $sql);

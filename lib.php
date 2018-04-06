@@ -127,10 +127,26 @@ function add_quarter($quarter){
     mysqli_stmt_bind_param($stmt,'s', $quarter);
     mysqli_stmt_execute($stmt);
 
-	$sql2 = "select quarter_id from quarter where is_current_quarter = 1";
-	$result2 = mysqli_query($dbConn, $sql2);
-	$row2 = mysqli_fetch_array($result2);
-	return $row2['quarter_id'];
+	$current_quarter = get_current_quarter();
+	return $current_quarter;
+}
+
+function get_quarter_by_id($quarter_id){
+    global $dbConn;
+
+    $sql2 = "select upper(quarter_short_name) AS quarter_short_name from quarter where quarter_id = $quarter_id";
+    $result2 = mysqli_query($dbConn, $sql2);
+    $row2 = mysqli_fetch_array($result2);
+    return $row2['quarter_short_name'];
+}
+
+function get_current_quarter(){
+    global $dbConn;
+
+    $sql2 = "select quarter_id from quarter where is_current_quarter = 1";
+    $result2 = mysqli_query($dbConn, $sql2);
+    $row2 = mysqli_fetch_array($result2);
+    return $row2['quarter_id'];
 }
 
 /* switch user on and off admin */
@@ -149,6 +165,39 @@ function find_collector($uclalogonid){
 	$rs = mysqli_query($dbConn, $sql);
 	$rw = mysqli_fetch_array($rs);
 	return $rw['collector_sid'];
+}
+
+function run_quarter_report($quarter_id){
+    global $dbConn;
+
+    $sql = "INSERT INTO report_history (quarter_id, active_collectors, new_consultants, new_contexts, new_data, total_data_size)
+            values(
+                $quarter_id, /* quarter */
+                (SELECT COUNT(*) FROM
+                    (SELECT collector_id FROM consultant WHERE consultant_quarter_created = $quarter_id
+                     UNION
+                    SELECT collector_id FROM context WHERE context_quarter_created = $quarter_id
+                     UNION
+                    SELECT collector_id FROM data WHERE data_quarter_created = $quarter_id) 
+                AS all_collectors), /* total_active_collectors */
+                (SELECT
+                    count(consultant_id) 
+                FROM consultant
+                WHERE consultant_quarter_created = $quarter_id), /* total_new_consultants */
+                (SELECT
+                    count(context_id) AS total_new_contexts
+                FROM context
+                WHERE context_quarter_created = $quarter_id), /* total_new_contexts */
+                (SELECT
+                    count(data_id)
+                FROM data
+                WHERE data_quarter_created = $quarter_id), /* total_new_data */
+                (SELECT
+                    COALESCE(SUM(data_file_size), 0)
+                FROM data
+                WHERE data_quarter_created = $quarter_id) /* total_new_file_size */
+            )";
+    mysqli_query($dbConn, $sql);
 }
 
 function check_test(){

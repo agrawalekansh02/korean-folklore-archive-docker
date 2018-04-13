@@ -1,4 +1,4 @@
-<?php
+ <?php
 $user = check_auth();
 if (!$user->is_admin()) exit('Not authorized.');
 $dbConn = get_connection();
@@ -42,15 +42,16 @@ if (mysqli_num_rows($report_results) > 0) { ?>
         </thead>
         <tbody>
             <?php 
-                while($row = mysqli_fetch_assoc($report_results)) {
-                    echo "<tr>
-                            <td>" . $row["active_collectors"] . "</td>
-                            <td>" . $row["new_consultants"] . "</td>
-                            <td>" . $row["new_contexts"] . "</td>
-                            <td>" . $row["new_data"] . "</td>
-                            <td>" . format_file_size($row["total_data_size"]) . "</td>
-                            <td>" . date('n/j/y g:i a', strtotime($row["report_time"])) . "</td>
-                        </tr>";
+                while($row = mysqli_fetch_assoc($report_results)) { ?>
+                    <tr>
+                        <td><?=$row["active_collectors"];?></td>
+                        <td><?=$row["new_consultants"];?></td>
+                        <td><?=$row["new_contexts"];?></td>
+                        <td><?=$row["new_data"];?></td>
+                        <td><?=format_file_size($row["total_data_size"]);?></td>
+                        <td><?=date('n/j/y g:i a', strtotime($row["report_time"]));?></td>
+                    </tr>
+            <?php
                 }
             ?>
         </tbody>

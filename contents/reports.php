@@ -76,16 +76,17 @@ if (mysqli_num_rows($report_results) > 0) { ?>
         </thead>
         <tbody>
             <?php 
-                while($row = mysqli_fetch_assoc($report_results)) {
-                    echo "<tr>
-                            <td><a href='reports_history/" . $row["quarter_id"] . "'>" . $row["quarter_short_name"] . "</a></td>
-                            <td>" . $row["active_collectors"] . "</td>
-                            <td>" . $row["new_consultants"] . "</td>
-                            <td>" . $row["new_contexts"] . "</td>
-                            <td>" . $row["new_data"] . "</td>
-                            <td>" . format_file_size($row["total_data_size"]) . "</td>
-                            <td>" . date('n/j/y g:i a', strtotime($row["report_time"])) . "</td>
-                        </tr>";
+                while($row = mysqli_fetch_assoc($report_results)) {?>
+                    <tr>
+                        <td><a href='reports_history/<?=$row["quarter_id"];?>'><?=$row["quarter_short_name"];?></a></td>
+                        <td><?=$row["active_collectors"];?></td>
+                        <td><?=$row["new_consultants"];?></td>
+                        <td><?=$row["new_contexts"];?></td>
+                        <td><?=$row["new_data"];?></td>
+                        <td><?=format_file_size($row["total_data_size"]);?></td>
+                        <td><?=date('n/j/y g:i a', strtotime($row["report_time"]));?></td>
+                    </tr>
+            <?php
                 }
             ?>
         </tbody>

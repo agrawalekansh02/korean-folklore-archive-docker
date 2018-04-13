@@ -118,6 +118,12 @@ $cid = (isset($data[2])) ? $data[2] : false;  // collectorid
 $action = (isset($data[3])) ? $data[3] : false; // action
 $sql_set = array();
 
+$valid_tablenames = array('consultant', 'context', 'collector', 'data');
+if(!in_array($table, $valid_tablenames)){
+	header("Location: ".HOST."dashboard");
+	exit();
+}
+
 foreach ($_POST as $k => $v) {
 
 /* when checkbox post or alike, make sure the value is NOT empty

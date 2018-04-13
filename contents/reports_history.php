@@ -10,6 +10,14 @@ if (!isset($data[0]) || empty($data[0])) {
 
 $quarter_id = $data[0];
 
+// if submit write to file
+if (isset($_POST['run_quarter']) && !empty($_POST['run_quarter'])){
+    run_quarter_report($_POST['run_quarter']);
+
+    //to clear any post data, so upon refreshing, reports don't run again
+    header("Location: ".HOST."reports_history/".$quarter_id);
+}
+
 echo "<h3>" . get_quarter_by_id($quarter_id) . " REPORT HISTORY</h3><br>";
 
 //get report history
@@ -26,8 +34,15 @@ $quarter_report_history =  "SELECT
                             WHERE rh.quarter_id = $quarter_id
                             ORDER BY 
                                 rh.report_time DESC";
-$report_results = mysqli_query($dbConn, $quarter_report_history);
+$report_results = mysqli_query($dbConn, $quarter_report_history); ?>
 
+<form method="post" action="" id='reports_history'>
+    <input type='hidden' name='run_quarter' value='<?=$quarter_id;?>'>
+    <input type='submit' value="Run New Report" >
+</form>
+<br>
+<br>
+<?php
 if (mysqli_num_rows($report_results) > 0) { ?>
     <table class='reports'>
         <thead>

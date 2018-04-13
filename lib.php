@@ -93,51 +93,56 @@ function get_records($table, $collector_id=false) {
 
 function check_auth() {
     global $user;
-	if (isset($_COOKIE['kfl'])){
-		if (!$user->auth) { exit('Not authorized'); }
-	    if (!$user->is_user()) { 
-			header("Location: " . HOST . "collector"); 
-			exit(); 
-		}
-	}
-	else{
-		header("Location: " . HOST . "login"); 
-		exit(); 
+    if (isset($_COOKIE['kfl'])){
+        if (!$user->auth) { exit('Not authorized'); }
+        if (!$user->is_user()) { 
+            header("Location: " . HOST . "collector"); 
+            exit(); 
+        }
+    }
+    else{
+        header("Location: " . HOST . "login"); 
+        exit(); 
     }
     return $user;
 }
 
 function define_passcode(){
-	$passcode = file_get_contents('mini/passcode.txt', FILE_USE_INCLUDE_PATH);
-	define('PASSCODE', $passcode );
+    $passcode = file_get_contents('mini/passcode.txt', FILE_USE_INCLUDE_PATH);
+    define('PASSCODE', $passcode );
 }
 
 function update_passcode($passcode){
-	file_put_contents('mini/passcode.txt', $passcode);
+    file_put_contents('mini/passcode.txt', $passcode);
 }
 
 function add_quarter($quarter){
     global $dbConn;
 
-	$sql = "update quarter set is_current_quarter = 0";
-	mysqli_query($dbConn, $sql);
+    $sql = "update quarter set is_current_quarter = 0";
+    mysqli_query($dbConn, $sql);
 
-	$sql = "insert into quarter(quarter_short_name, is_current_quarter) values (?, 1) on duplicate key update is_current_quarter = 1";
-	$stmt = mysqli_prepare($dbConn, $sql);
+    $sql = "insert into quarter(quarter_short_name, is_current_quarter) values (?, 1) on duplicate key update is_current_quarter = 1";
+    $stmt = mysqli_prepare($dbConn, $sql);
     mysqli_stmt_bind_param($stmt,'s', $quarter);
     mysqli_stmt_execute($stmt);
-
-	$current_quarter = get_current_quarter();
-	return $current_quarter;
+    $current_quarter = mysqli_insert_id($stmt);
+    mysqli_stmt_close($stmt);
+    
+    return $current_quarter;
 }
 
 function get_quarter_by_id($quarter_id){
     global $dbConn;
 
-    $sql2 = "select upper(quarter_short_name) AS quarter_short_name from quarter where quarter_id = $quarter_id";
-    $result2 = mysqli_query($dbConn, $sql2);
-    $row2 = mysqli_fetch_array($result2);
-    return $row2['quarter_short_name'];
+    $sql = "select upper(quarter_short_name) AS quarter_short_name from quarter where quarter_id = ?";
+    $stmt = mysqli_prepare($dbConn, $sql);
+    mysqli_stmt_bind_param($stmt,'i', $quarter_id);
+    mysqli_stmt_execute($stmt); 
+    mysqli_stmt_bind_result($stmt, $quarter_short_name);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    return $quarter_short_name;
 }
 
 function get_current_quarter(){
@@ -153,18 +158,25 @@ function get_current_quarter(){
 function update_admin($uclalogonid, $admin=1){
     global $dbConn;
 
-	$sql = "update collector set collector_status = '". $admin ."' where collector_sid = '". $uclalogonid . "'";
-	mysqli_query($dbConn, $sql);
+    $sql = "update collector set collector_status = ? where collector_sid = ?";
+    $stmt = mysqli_prepare($dbConn, $sql);
+    mysqli_stmt_bind_param($stmt,'ss', $admin, $uclalogonid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 }
 
 /* find by ucla logon id */
 function find_collector($uclalogonid){
     global $dbConn;
 
-	$sql = "select collector_sid from collector where lower(collector_sid) = '". $uclalogonid . "'";
-	$rs = mysqli_query($dbConn, $sql);
-	$rw = mysqli_fetch_array($rs);
-	return $rw['collector_sid'];
+    $sql = "select collector_sid from collector where lower(collector_sid) = '". $uclalogonid . "'";
+    $stmt = mysqli_prepare($dbConn, $sql);
+    mysqli_stmt_bind_param($stmt,'s', $uclalogonid);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $collector_sid);
+    mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+    return $collector_sid;
 }
 
 function run_quarter_report($quarter_id){
@@ -172,32 +184,35 @@ function run_quarter_report($quarter_id){
 
     $sql = "INSERT INTO report_history (quarter_id, active_collectors, new_consultants, new_contexts, new_data, total_data_size)
             values(
-                $quarter_id, /* quarter */
+                ?, /* quarter */
                 (SELECT COUNT(*) FROM
-                    (SELECT collector_id FROM consultant WHERE consultant_quarter_created = $quarter_id
+                    (SELECT collector_id FROM consultant WHERE consultant_quarter_created = ?
                      UNION
-                    SELECT collector_id FROM context WHERE context_quarter_created = $quarter_id
+                    SELECT collector_id FROM context WHERE context_quarter_created = ?
                      UNION
-                    SELECT collector_id FROM data WHERE data_quarter_created = $quarter_id) 
+                    SELECT collector_id FROM data WHERE data_quarter_created = ?) 
                 AS all_collectors), /* total_active_collectors */
                 (SELECT
                     count(consultant_id) 
                 FROM consultant
-                WHERE consultant_quarter_created = $quarter_id), /* total_new_consultants */
+                WHERE consultant_quarter_created = ?), /* total_new_consultants */
                 (SELECT
                     count(context_id) AS total_new_contexts
                 FROM context
-                WHERE context_quarter_created = $quarter_id), /* total_new_contexts */
+                WHERE context_quarter_created = ?), /* total_new_contexts */
                 (SELECT
                     count(data_id)
                 FROM data
-                WHERE data_quarter_created = $quarter_id), /* total_new_data */
+                WHERE data_quarter_created = ?), /* total_new_data */
                 (SELECT
                     COALESCE(SUM(data_file_size), 0)
                 FROM data
-                WHERE data_quarter_created = $quarter_id) /* total_new_file_size */
+                WHERE data_quarter_created = ?) /* total_new_file_size */
             )";
-    mysqli_query($dbConn, $sql);
+    $stmt = mysqli_prepare($dbConn, $sql);
+    mysqli_stmt_bind_param($stmt,'iiiiiiii', $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 }
 
 function check_test(){

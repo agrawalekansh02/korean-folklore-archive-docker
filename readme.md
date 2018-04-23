@@ -1,9 +1,16 @@
-# Korean Folklore
-**Initial Setup**
+# Korean Folklore Archive #
+
+### Setup ###
+
+This application does not have any external dependencies for development. Simply clone the repository:
+
+`git clone git@bitbucket.org:uclacdh/kfl-map-search.git`
+
+Please note: 
 
  - Include database login credentials in lib.php
+ - Compile SCSS files within map_search directory
 
-**Map Setup**
+### Credits ###
 
- - Include bower_components folder and files in map_search directory
- - Don't forget to compile all SASS files within map_search directory
+Copyright 2018 The Regents of the University of California.

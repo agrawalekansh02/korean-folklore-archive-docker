@@ -47,7 +47,9 @@ if ($_SERVER['SERVER_NAME']=='localhost'){
 	</table>
 
 	<div id="footer">
-	<a href="http://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; 2000 UC Regents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:var helpWin = window.open('http://dev.cdh.ucla.edu/etickets/websupport.php?url=' + encodeURIComponent(window.location.toString()),'helpWin','status=0, toolbar=0, height=500, width=600, menubar=0'); if (helpWin) helpWin.moveTo((screen.width - 600)/2,(screen.height - 500)/2); void(0);">Web Support</a>
+		<a href="http://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; 2000 UC Regents&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://cdh.ucla.edu/ticket" target="_blank">Web Support</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://bitbucket.org/uclacdh/kfl-map-search" target="_blank">Open Source Code</a>
 	</div>
 
 </div>

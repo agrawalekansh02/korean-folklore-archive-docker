@@ -1,4 +1,17 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+require_once (__DIR__.'/../box-jwt-php/bootstrap/autoload.php');
+require_once (__DIR__.'/../box-jwt-php/helpers/helpers.php');
+
+use Box\Auth\BoxJWTAuth;
+use Box\BoxClient;
+use Box\Config\BoxConstants;
+use Box\Models\Request\BoxFileRequest;
+
 global $user;
 if (!$user->auth) {exit('Not authorized');}
 
@@ -7,23 +20,82 @@ $dbConn = get_connection();
 function get_set_sql($f) {
 	global $dbConn;
 	foreach ($f as $k => $v) {
-		$sql_str[] = "$k='".mysqli_real_escape_string($dbConn, $v)."'";
+
+		$value = mysqli_real_escape_string($dbConn, trim($v));
+
+		if($value == NULL){
+			$sql_str[] = "$k = NULL";
+		}else{
+			$sql_str[] = "$k = '".$value."'";
+		}
+		
 	}
 	return implode(', ', $sql_str);
 }
 
 function get_file() {
+
+	//add box upload info
+	$boxJwt     = new BoxJWTAuth();
+	$boxConfig  = $boxJwt->getBoxConfig();
+	$adminToken = $boxJwt->adminToken();
+	$boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
+
+	$res   = $boxClient->usersManager->getEnterpriseUsers(null, null);
+	$users = json_decode($res->getBody());
+
+	if (!$users->total_count) {
+	    echo "No users found for $userLogin.\n";
+	    return;
+	}
+
+	$user    = $users->entries[0];
+	$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
+
 	$user = get_user();
 	$data = false;
 	foreach ($_FILES as $name => $data) {
 		if ($data['size'] > 10 && $data['size'] < 1048576*16) {
-			$id = $user['collector_id'] . substr(time(), -6);
-			move_uploaded_file($data['tmp_name'], "files/" . $id);	
-			$data['files'] = $id;
+
+			//upload file to temp folder on server
+			$tempDir = sys_get_temp_dir();
+
+			//new file name
+			$origFileName = $data['name'];
+			$info = pathinfo($origFileName);
+		    // get the filename without the extension
+		    $fileBasename =  basename($origFileName,'.'.$info['extension']);
+		    // get the extension without the image name
+		    $extArray = explode('.', $origFileName);
+    		$fileExt = end($extArray);
+    		// id and time
+			$idtime = $user['collector_id'] . substr(time(), -6);
+
+			$finalBoxName = $fileBasename . '_' . $idtime . '.' . $fileExt;
+
+			$filePath = $tempDir."/".$finalBoxName;
+			$data['files'] = $finalBoxName;
+
+			if(move_uploaded_file($data['tmp_name'], $filePath)){
+
+				//if moved to temp folder... upload to box
+				$parentId = BoxConstants::BOX_ROOT_FOLDER_ID;
+
+				$fileRequest = new BoxFileRequest(['name' => $finalBoxName, 'parent' => ['id' => $parentId]]);
+				$res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath, $headers);
+				$uploadedFileObject = json_decode($res->getBody());
+
+				$data['boxid']   = $uploadedFileObject->entries[0]->id;
+
+				//delete file from tempDir once uploaded to box
+				unlink($filePath);
+			}
+			
 			// only one file can be uploaded at a time. 
 			break;
 		}
 	}
+
 	return $data;
 }
 
@@ -34,6 +106,7 @@ function process_consultant($f, $id=false) {
 		$f['consultant_file_type'] = $fd['type'];
 		$f['consultant_file_size'] = $fd['size'];
 		$f['consultant_consent_form'] = $fd['files'];
+		$f['consultant_box_file_id'] = $fd['boxid'];
 	}
 	return $f;
 }
@@ -55,11 +128,12 @@ function process_collector($f, $id=false) {
 }
 function process_data($f, $id=false) {
 	if (!$id) unset($f['data_id']);
-	if ($fd = get_file()) {
+	if (($fd = get_file()) && !(empty($fd['name']))) {
 		$f['data_file_name'] = $fd['name'];
 		$f['data_file_type'] = $fd['type'];
 		$f['data_file_size'] = $fd['size'];
 		$f['data_file'] = $fd['files'];
+		$f['data_box_file_id'] = $fd['boxid'];
 	}
 	return $f;
 }
@@ -201,6 +275,7 @@ else if (!$id) {
 else if (!empty($sql_set)) {
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "update $table set ".get_set_sql($f)." where ${table}_id=$id ";
+
 	if ($action == "role"){
 		mysqli_query($dbConn, $sql);
 	}

@@ -1,32 +1,6 @@
 <?php
-
-// if local
-if ($_SERVER['SERVER_NAME']=='localhost'){
-    define('SECRET','');
-    define('HOST','http://localhost:8888/kfl/');
-    define('DB_HOST', '');
-    define('DB_USERNAME', '');
-    define('DB_PASSWORD', '');
-    define('DB_NAME', '');
-}
-else if ($_SERVER['SERVER_NAME']=='dev.kfl.humnet.ucla.edu'){
-// if test
-    define('SECRET','');
-    define('HOST','http://dev.kfl.humnet.ucla.edu/');
-    define('DB_HOST', 'localhost');
-    define('DB_USERNAME', '');
-    define('DB_PASSWORD', '');
-    define('DB_NAME', '');
-}
-else if ($_SERVER['SERVER_NAME']=='kfl.humnet.ucla.edu'){
-// if production
-    define('SECRET','');
-    define('HOST','http://kfl.humnet.ucla.edu/');
-    define('DB_HOST', 'localhost');
-    define('DB_USERNAME', '');
-    define('DB_PASSWORD', '');
-    define('DB_NAME', '');
-}
+include_once('dbconfig.php');
+include_once('user.php');
 
 define_passcode();
 
@@ -38,7 +12,7 @@ function get_connection() {
 
 $dbConn = get_connection();
 
-include_once('user.php');
+
 
 function get_token($str) {
     return md5(SECRET . $str);

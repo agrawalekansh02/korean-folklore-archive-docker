@@ -14,23 +14,24 @@ This application uses a Box JWT PHP Library for file storage.
 
 	* https://github.com/allenmichael/box-jwt-php
        
-       
 2. Follow setup instructions from original repo.
 
+3. Create a folder in box in which all uploaded files from this web application will be stored.
 
-3. In the src/Config/BoxConstants.php ...
+4. Create a box user (either manually or by following the example in examples/exUsersCreateAppUser.php), and add this user as a collaborator on the box folder.
+
+5. In the src/Config/BoxConstants.php ...
 
 	* Set the **CONFIG_PATH** variable to the full path location.
    
 	* Be sure to also set **BOX_ROOT_FOLDER_ID** and **BOX_ROOT_FOLDER_NAME**.
 
-
-4. In box.config.php ...
+6. In box.config.php ...
 
 	* Set **jwtPrivateKey** to the full path of your pkey.pem file.
 
 
-5. In vendor/guzzlehttp/guzzle/src/RedirectMiddleware.php ...
+7. In vendor/guzzlehttp/guzzle/src/RedirectMiddleware.php ...
 
 	* For **$defaultSettings**, set 'max' => 0 (This will change the amount of redirects allowed. This is very important for downloading files).
 

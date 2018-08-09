@@ -47,7 +47,7 @@ if ($_SERVER['SERVER_NAME']=='localhost'){
 	</table>
 
 	<div id="footer">
-		<a href="http://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; 2000 UC Regents&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="http://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; <?php echo date("Y"); ?> UC Regents&nbsp;&nbsp;|&nbsp;&nbsp;
 		<a href="http://cdh.ucla.edu/ticket" target="_blank">Web Support</a>&nbsp;&nbsp;|&nbsp;&nbsp;
 		<a href="http://bitbucket.org/uclacdh/kfl-map-search" target="_blank">Open Source Code</a>
 	</div>

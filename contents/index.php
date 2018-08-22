@@ -23,7 +23,5 @@ The Korean / Korean American Online Folklore Archive is a growing on-line archiv
 <p class="display-text">
 The majority of the folklore collected in the archive is either in English or in Korean. Korean language recordings, and Korean words, are transcribed using the McCune-Reischauer transcription method. Instructions on transcribing according to the McCune-Reischauer system can be found <a href = 'http://www.romanization.org/main.php' target=_blank>here</a>.
 </p>
-<p class="display-text">
-We expect an advanced search capability for the data to be ready by 2014.
-</p>
+
 </div>

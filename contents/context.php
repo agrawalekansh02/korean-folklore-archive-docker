@@ -48,7 +48,7 @@ if(isset($context_event_type)){
           <table width="100%" border="0" height="37">
             <tr valign="bottom" align="left"> 
               <td width="59%" height="7" class="form_title">
-                <label>Event or Interview Title:</label><font color="#FF0000">*</font><b> </b>
+                <label>Event or Interview Title:</label> <font color="#FF0000">*</font><b> </b>
               </td>
               <td width="41%" height="7" class="form_title"></td>
             </tr>
@@ -65,7 +65,7 @@ if(isset($context_event_type)){
             <tr valign="middle" align="left"> 
               <td colspan="6" height="26" class="form_title" valign="top">
                 <label>Type of event or expression:</label>
-                <b class="unnamed1"> (Check all that apply)</b><font color="#FF0000">*</font></td>
+                <b class="unnamed1"> (Check all that apply)</b> <font color="#FF0000">*</font></td>
               <td width="104" height="26" class="unnamed1"></td>
             </tr>
     				<tr>
@@ -492,7 +492,7 @@ if(isset($context_event_type)){
 
           <table width="100%" border="0" height="105">
             <tr valign="bottom" align="left"> 
-              <td colspan="2" height="7" class="form_title"><b>Consultants present:</b></td>
+              <td colspan="2" height="7" class="form_title"><b>Consultants present:</b> <font color="#FF0000">*</font></td>
               <td width="41%" height="7" class="form_title"></td>
             </tr>
             <tr valign="middle" align="left">

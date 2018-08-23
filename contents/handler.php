@@ -17,6 +17,11 @@ if (!$user->auth) {exit('Not authorized');}
 
 $dbConn = get_connection();
 
+function error_message() {
+	echo "An error occured while saving this form. Your progress has not been saved.";
+	exit;
+}
+
 function get_set_sql($f) {
 	global $dbConn;
 	foreach ($f as $k => $v) {
@@ -76,9 +81,12 @@ function get_file() {
 			$filePath = $tempDir."/".$finalBoxName;
 			$data['files'] = $finalBoxName;
 
-			if(move_uploaded_file($data['tmp_name'], $filePath)){
+			if(!move_uploaded_file($data['tmp_name'], $filePath)){
+				error_message();
+			}
 
-				//if moved to temp folder... upload to box
+			//if moved to temp folder... upload to box
+			try{
 				$parentId = BoxConstants::BOX_ROOT_FOLDER_ID;
 
 				$fileRequest = new BoxFileRequest(['name' => $finalBoxName, 'parent' => ['id' => $parentId]]);
@@ -86,9 +94,14 @@ function get_file() {
 				$uploadedFileObject = json_decode($res->getBody());
 
 				$data['boxid']   = $uploadedFileObject->entries[0]->id;
-
-				//delete file from tempDir once uploaded to box
+				
+				//delete file from tempDir
 				unlink($filePath);
+			}
+			catch(Exception $e) {
+				//delete file from tempDir
+				unlink($filePath);
+				error_message();
 			}
 			
 			// only one file can be uploaded at a time. 
@@ -102,7 +115,7 @@ function get_file() {
 function process_consultant($f, $id=false) {
 	if (!$id) unset($f['consultant_id']);
 	if (($fd = get_file()) && !(empty($fd['name']))) {
-		$f['consultant_file_name']	= $fd['name'];
+		$f['consultant_file_name'] = $fd['name'];
 		$f['consultant_file_type'] = $fd['type'];
 		$f['consultant_file_size'] = $fd['size'];
 		$f['consultant_consent_form'] = $fd['files'];
@@ -214,7 +227,9 @@ if contain more than one item so that it would not result in an extra comma at t
 		{
 			$v=$v2;
 			$v = implode(',', $v);
-
+		}
+		else{
+			$v = '';
 		}
 	}
 	$sql_set[$k] = $v;
@@ -242,11 +257,15 @@ switch($table) {
 
 if (!$id && $action == "archive"){
 	$sql = "update $table set ${table}_status = 0 where ${table}_id in (". get_set_group_sql($sql_set) . ")" . get_auth_sql();
-	mysqli_query($dbConn, $sql);
+	if(!mysqli_query($dbConn, $sql)) {
+		error_message();
+	}
 }
 else if (!$id && $action == "activate"){
 	$sql = "update $table set ${table}_status = 1 where ${table}_id in (". get_set_group_sql($sql_set) . ")" . get_auth_sql();
-	mysqli_query($dbConn, $sql);
+	if(!mysqli_query($dbConn, $sql)) {
+		error_message();
+	}
 }
 else if (!$id) {
 	if ($table != 'collector'){
@@ -264,28 +283,36 @@ else if (!$id) {
 
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "insert into $table set " . get_set_sql($f);
-	mysqli_query($dbConn, $sql);
+
+	if(!mysqli_query($dbConn, $sql)) {
+		error_message();
+	}
 	$id = mysqli_insert_id($dbConn);
 	// insert the quarter
 	if ($table == 'collector'){
 		$sql = "insert into collector_quarter select ". $id . ", quarter_id from quarter where is_current_quarter = 1";
-		mysqli_query($dbConn, $sql);
+		if(!mysqli_query($dbConn, $sql)) {
+			error_message();
+		}
 	}
 } 
 else if (!empty($sql_set)) {
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "update $table set ".get_set_sql($f)." where ${table}_id=$id ";
 
-	if ($action == "role"){
-		mysqli_query($dbConn, $sql);
+	if ($action != "role"){
+		$sql = $sql . get_auth_sql();
 	}
-	else{
-		mysqli_query($dbConn, $sql. get_auth_sql());
+	
+	if(!mysqli_query($dbConn, $sql)) {
+		error_message();
 	}
 }
 else{
 	$sql = "delete from $table where ${table}_id=$id " . get_auth_sql();
-	mysqli_query($dbConn, $sql);
+	if(!mysqli_query($dbConn, $sql)) {
+		error_message();
+	}
 }
 
 if ($action == "archive"){

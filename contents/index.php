@@ -21,7 +21,7 @@ $user = check_auth();
 The Korean / Korean American Online Folklore Archive is a growing on-line archive of contemporary popular and traditional culture of Korea. The archive is based entirely on student collections in two upper division Asian Languages and Cultures courses (Korean M183 and Korean 187) at UCLA, serving between seventy and one hundred undergraduate students per academic year. In each class, a significant  portion of the coursework is comprised of individual, original fieldwork among the populations of Korean heritage in Southern California. Students input their fieldwork through a web interface and the results of their fieldwork is stored in a database residing on a server maintained by the Center for Digital Humanities. Currently, there are over 4000 records in the archive.
 </p>
 <p class="display-text">
-The majority of the folklore collected in the archive is either in English or in Korean. Korean language recordings, and Korean words, are transcribed using the McCune-Reischauer transcription method. Instructions on transcribing according to the McCune-Reischauer system can be found <a href = 'http://www.romanization.org/main.php' target=_blank>here</a>.
+The majority of the folklore collected in the archive is either in English or in Korean. Korean language recordings, and Korean words, are transcribed using the McCune-Reischauer transcription method. Instructions on transcribing according to the McCune-Reischauer system can be found <a href = 'http://roman.cs.pusan.ac.kr/input_eng.aspx' target=_blank>here</a>.
 </p>
 
 </div>

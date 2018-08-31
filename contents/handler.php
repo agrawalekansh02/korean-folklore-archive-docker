@@ -112,6 +112,53 @@ function get_file() {
 	return $data;
 }
 
+function get_old_file($table, $id){
+
+	global $dbConn;
+
+	//only applies to consultant and data tables
+	if($table != 'consultant' && $table != 'data'){
+		return NULL;
+	}
+
+	$sql = "SELECT ${table}_box_file_id AS old_box_file_id FROM $table where ${table}_id=$id ". get_auth_sql();
+	$result = mysqli_query($dbConn, $sql);
+
+	$old_box_file_id = NULL;
+	if ($row = mysqli_fetch_assoc($result)){
+	    $old_box_file_id = $row['old_box_file_id'];
+	}
+
+	return $old_box_file_id;
+}
+
+function delete_box_file($old_box_file_id){
+	//add box upload info
+	$boxJwt     = new BoxJWTAuth();
+	$boxConfig  = $boxJwt->getBoxConfig();
+	$adminToken = $boxJwt->adminToken();
+	$boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
+
+	$res   = $boxClient->usersManager->getEnterpriseUsers(null, null);
+	$users = json_decode($res->getBody());
+
+	if (!$users->total_count) {
+	    echo "No users found for $userLogin.\n";
+	    return;
+	}
+
+	$user    = $users->entries[0];
+	$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
+
+	// delete file
+	try{
+		$res = $boxClient->filesManager->deleteFile($old_box_file_id, $headers);
+	}
+	catch(Exception $e){
+		// do nothing
+	}
+}
+
 function process_consultant($f, $id=false) {
 	if (!$id) unset($f['consultant_id']);
 	if (($fd = get_file()) && !(empty($fd['name']))) {
@@ -297,6 +344,10 @@ else if (!$id) {
 	}
 } 
 else if (!empty($sql_set)) {
+	
+	$new_box_file_id = isset($sql_set['${table}_box_file_id']) ? $sql_set['${table}_box_file_id'] : NULL;
+	$old_box_file_id = get_old_file($table, $id);
+
 	$f = preprocess_sqlset($table,$sql_set);
 	$sql = "update $table set ".get_set_sql($f)." where ${table}_id=$id ";
 
@@ -307,11 +358,21 @@ else if (!empty($sql_set)) {
 	if(!mysqli_query($dbConn, $sql)) {
 		error_message();
 	}
+
+	if($old_box_file_id != NULL && $new_box_file_id != NULL){
+		delete_box_file($old_box_file_id);
+	}
 }
 else{
+	$old_box_file_id = get_old_file($table, $id);
+
 	$sql = "delete from $table where ${table}_id=$id " . get_auth_sql();
 	if(!mysqli_query($dbConn, $sql)) {
 		error_message();
+	}
+
+	if($old_box_file_id != NULL){
+		delete_box_file($old_box_file_id);
 	}
 }
 

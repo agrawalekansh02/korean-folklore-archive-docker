@@ -3,16 +3,14 @@ error_reporting(E_ALL ^ E_NOTICE);
 include_once('lib.php');
 include_once('mini/cms.php');
 
-$cms->js[] = 'http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js';
-$cms->js[] = "js/jquery.ui.core.js";
-$cms->js[] = "js/jquery.ui.widget.js";
-$cms->js[] = "js/jquery.ui.datepicker.js";
-//$cms->js[] = "js/jquery-latest.js";// include the table sorter dose not show the arrow
+$cms->js[] = 'http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
+$cms->js[] = "https://code.jquery.com/ui/1.12.1/jquery-ui.js";
 $cms->js[] = "js/kfl.js";
-$cms->js[] = "main.js";
-$cms->css[] = "css/jquery.ui.all.css";
+
+$cms->css[] = "//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css";
 $cms->css[] = "css/layout.css";
 $cms->css[] = "css/menu.css";
+
 $content = $cms->content();
 $menu = $cms->content('menu');
 header('Content-Type: text/html; charset=utf-8'); 

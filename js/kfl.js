@@ -56,38 +56,52 @@ $(function() {
 /* search button  */
 $(function() {
     $(".search_button").click(function() {
-     // getting the value that user typed
-	 var searchString    = $("#search_box").val();
-	 // forming the queryString
-	 var data            = 'search='+ searchString;
-     // if searchString is not empty
-	 if(searchString) {
-     // ajax call
-     $.ajax({
-	   type: "POST",
-	   url: "do_search.php",
-	   data: data,
-	   beforeSend: function(html) { // this happens before actual call
-	   $("#results").html('');
-	   $("#searchresults").show();
-	   $(".word").html(searchString);
-	},
-	  success: function(data){ // this happens after we get results
-	  //$("#results").show();
-	  //$("#results").text(html).load('div#r');
-	  //var $response=$(data);
-      // dataValue = $response.filter('#r').text();
-	  var dataValue = $(data).find("#d123");
-	   $("#results").html(dataValue.html());
-
-
-
-	 
-}
-});   
-}
-return false;
+		// getting the value that user typed
+		var searchString    = $("#search_box").val();
+		// forming the queryString
+		var data            = 'search='+ searchString;
+		// if searchString is not empty
+		if(searchString) {
+			// ajax call
+			$.ajax({
+				type: "POST",
+				url: "do_search.php",
+				data: data,
+				beforeSend: function(html) { // this happens before actual call
+					$("#results").html('');
+					$("#searchresults").show();
+					$(".word").html(searchString);
+				},
+				success: function(data){ // this happens after we get results
+					//$("#results").show();
+					//$("#results").text(html).load('div#r');
+					//var $response=$(data);
+					// dataValue = $response.filter('#r').text();
+					var dataValue = $(data).find("#d123");
+					$("#results").html(dataValue.html());
+				}
+			});   
+		}
+		return false;
+	});
 });
+
+/* Datepicker */
+$(function() {
+	$( "#datepicker" ).each(function(){
+		$(this).datepicker({
+			changeMonth: true,
+			changeYear: true,
+			dateFormat:"yy/mm/dd",
+			yearRange:"c-80:c+1"
+		});	
+	});
+	$('.datepicker').datepicker({
+			changeMonth: true,
+			changeYear: true,
+			dateFormat:"yy/mm/dd",
+			yearRange:"c-80:c+1"
+	});	
 });
 
 

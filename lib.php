@@ -10,10 +10,6 @@ function get_connection() {
     return $connection;
 }
 
-$dbConn = get_connection();
-
-
-
 function get_token($str) {
     return md5(SECRET . $str);
 }
@@ -41,27 +37,49 @@ function get_collector_sql($and = true) {
 }
 
 function get_record($table, $id, $collector_id=false) {
-    global $user, $dbConn;
+    global $user;
+
+    $dbConn = get_connection();
+
     if (!$user->is_admin()) $collector_id = $user->get('id');
     $and = ($collector_id) ? "and collector_id=$collector_id" : '';
 
     $sql = "select * from $table where ${table}_id = $id $and";
     $result = mysqli_query($dbConn, $sql);
-    if (!$result) return 'Query was unsuccesssful';
-    if ($row=mysqli_fetch_assoc($result)) return $row;
-    else return array();
+
+    $output = array();
+
+    if (!$result){
+        $output = 'Query was unsuccesssful';
+    }
+    else if ($row=mysqli_fetch_assoc($result)){
+        $output = $row;
+    }
+
+    mysqli_close($dbConn);
+
+    return $output;
 }
 
 function get_records($table, $collector_id=false) {
-    global $user, $dbConn;
+    global $user;
+
+    $dbConn = get_connection();
+
     if (!$user->is_admin()) $collector_id = $user->get('id');
     $and = ($collector_id) ? "and collector_id=$collector_id" : '';
 
     $sql = "select * from $table where 1 $and";
     $result = mysqli_query($dbConn, $sql);
-    if (!$result) return array();
+
     $data = array();
-    while ($row=mysqli_fetch_assoc($result)) $data[] = $row;
+    if ($result){
+        while ($row=mysqli_fetch_assoc($result)){ 
+            $data[] = $row;
+        }
+    }
+    
+    mysqli_close($dbConn);
     return $data;
 }
 
@@ -91,7 +109,8 @@ function update_passcode($passcode){
 }
 
 function add_quarter($quarter){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql = "update quarter set is_current_quarter = 0";
     mysqli_query($dbConn, $sql);
@@ -102,12 +121,13 @@ function add_quarter($quarter){
     mysqli_stmt_execute($stmt);
     $current_quarter = mysqli_insert_id($stmt);
     mysqli_stmt_close($stmt);
-    
+    mysqli_close($dbConn);
     return $current_quarter;
 }
 
 function get_quarter_by_id($quarter_id){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql = "select upper(quarter_short_name) AS quarter_short_name from quarter where quarter_id = ?";
     $stmt = mysqli_prepare($dbConn, $sql);
@@ -116,32 +136,38 @@ function get_quarter_by_id($quarter_id){
     mysqli_stmt_bind_result($stmt, $quarter_short_name);
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
+    mysqli_close($dbConn);
     return $quarter_short_name;
 }
 
 function get_current_quarter(){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql2 = "select quarter_id from quarter where is_current_quarter = 1";
     $result2 = mysqli_query($dbConn, $sql2);
     $row2 = mysqli_fetch_array($result2);
+    mysqli_close($dbConn);
     return $row2['quarter_id'];
 }
 
 /* switch user on and off admin */
 function update_admin($uclalogonid, $admin=1){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql = "update collector set collector_status = ? where collector_sid = ?";
     $stmt = mysqli_prepare($dbConn, $sql);
     mysqli_stmt_bind_param($stmt,'ss', $admin, $uclalogonid);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+    mysqli_close($dbConn);
 }
 
 /* find by ucla logon id */
 function find_collector($uclalogonid){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql = "select collector_sid from collector where lower(collector_sid) = '". $uclalogonid . "'";
     $stmt = mysqli_prepare($dbConn, $sql);
@@ -150,11 +176,13 @@ function find_collector($uclalogonid){
     mysqli_stmt_bind_result($stmt, $collector_sid);
     mysqli_stmt_fetch($stmt);
     mysqli_stmt_close($stmt);
+    mysqli_close($dbConn);
     return $collector_sid;
 }
 
 function run_quarter_report($quarter_id){
-    global $dbConn;
+    
+    $dbConn = get_connection();
 
     $sql = "INSERT INTO report_history (quarter_id, active_collectors, new_consultants, new_contexts, new_data, total_data_size)
             values(
@@ -187,6 +215,7 @@ function run_quarter_report($quarter_id){
     mysqli_stmt_bind_param($stmt,'iiiiiiii', $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id, $quarter_id);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
+    mysqli_close($dbConn);
 }
 
 function check_test(){

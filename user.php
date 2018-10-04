@@ -37,6 +37,7 @@ class User {
                         $this->data[preg_replace('/collector_/','',$k)] = $v;
                     }
                 }
+                mysqli_close($dbConn);
             } else {
                 setcookie('kfl','',time() - 3600,'/');
                 exit('Invalid token.');

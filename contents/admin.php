@@ -28,6 +28,7 @@ $data = array();
 while ($row=mysqli_fetch_assoc($result)){
 	$data[] = $row;
 }
+mysqli_close($dbConn);
 ?>
 <h2>COLLECTORS</h2>
 <form name="form1" id="admin_form" enctype="multipart/form-data" method="post" action="handler/collector/<?php echo isset($collector_id) ? $collector_id : "";?>//archive">

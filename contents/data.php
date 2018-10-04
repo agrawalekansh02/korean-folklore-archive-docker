@@ -193,7 +193,9 @@ if (isset($data[0]) && !empty($data[0])) {
       </td>
     </tr>
   </table>
-
+<?php
+mysqli_close($dbConn);
+?>
 <script>
   $(function(){
   	$('.contextset select').each(function(){

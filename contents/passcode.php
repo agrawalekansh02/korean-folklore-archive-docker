@@ -117,6 +117,9 @@ $r2 = mysqli_query($dbConn, $q2);
 </form>
 </div>     
 </div>
+<?php
+mysqli_close($dbConn);
+?>
 <script type="text/javascript">
 	function remove_admin(userId){
 		$('#remove_admin').val(userId);

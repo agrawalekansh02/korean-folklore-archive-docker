@@ -23,10 +23,12 @@ function error_message() {
 }
 
 function get_set_sql($f) {
-	global $dbConn;
+
+	$dbConn_2 = get_connection();
+
 	foreach ($f as $k => $v) {
 
-		$value = mysqli_real_escape_string($dbConn, trim($v));
+		$value = mysqli_real_escape_string($dbConn_2, trim($v));
 
 		if($value == NULL){
 			$sql_str[] = "$k = NULL";
@@ -35,6 +37,7 @@ function get_set_sql($f) {
 		}
 		
 	}
+	mysqli_close($dbConn_2);
 	return implode(', ', $sql_str);
 }
 
@@ -114,7 +117,7 @@ function get_file() {
 
 function get_old_file($table, $id){
 
-	global $dbConn;
+	$dbConn_2 = get_connection();
 
 	//only applies to consultant and data tables
 	if($table != 'consultant' && $table != 'data'){
@@ -122,12 +125,13 @@ function get_old_file($table, $id){
 	}
 
 	$sql = "SELECT ${table}_box_file_id AS old_box_file_id FROM $table where ${table}_id=$id ". get_auth_sql();
-	$result = mysqli_query($dbConn, $sql);
+	$result = mysqli_query($dbConn_2, $sql);
 
 	$old_box_file_id = NULL;
 	if ($row = mysqli_fetch_assoc($result)){
 	    $old_box_file_id = $row['old_box_file_id'];
 	}
+	mysqli_close($dbConn_2);
 
 	return $old_box_file_id;
 }
@@ -218,13 +222,14 @@ function get_set_group_sql($f) {
 
 /* retrieve columns for a table */
 function get_columns($table){
-	global $dbConn;
+	$dbConn_2 = get_connection();
 	$columns = array();
 	$query = "show columns from $table";
-	$result = mysqli_query($dbConn, $query);
+	$result = mysqli_query($dbConn_2, $query);
 	while ($row = mysqli_fetch_array($result)){
 		$columns[] = $row['Field'];
 	}
+	mysqli_close($dbConn_2);
 	return $columns;
 }
 
@@ -345,7 +350,7 @@ else if (!$id) {
 } 
 else if (!empty($sql_set)) {
 	
-	$new_box_file_id = isset($sql_set['${table}_box_file_id']) ? $sql_set['${table}_box_file_id'] : NULL;
+	$new_box_file_id = isset($sql_set[$table.'_box_file_id']) ? $sql_set[$table.'_box_file_id'] : NULL;
 	$old_box_file_id = get_old_file($table, $id);
 
 	$f = preprocess_sqlset($table,$sql_set);
@@ -375,6 +380,8 @@ else{
 		delete_box_file($old_box_file_id);
 	}
 }
+
+mysqli_close($dbConn);
 
 if ($action == "archive"){
 	header("Location: ".HOST."admin");

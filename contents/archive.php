@@ -26,7 +26,7 @@ $sql = "SELECT
 $result = mysqli_query($dbConn, $sql);
 $data = array();
 while ($row=mysqli_fetch_assoc($result)) $data[] = $row;
-
+mysqli_close($dbConn);
 ?>
 <h2>ARCHIVED COLLECTORS</h2>
 <form name="form1" id="archive_form" enctype="multipart/form-data" method="post" action="handler/collector/<?php echo isset($collector_id) ? $collector_id : "";?>//activate">

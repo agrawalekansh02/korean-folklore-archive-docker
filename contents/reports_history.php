@@ -72,4 +72,6 @@ if (mysqli_num_rows($report_results) > 0) { ?>
         </tbody>
     </table>
 <?php
-} else echo "0 reports"; 
+} else echo "0 reports";
+
+mysqli_close($dbConn); 

@@ -248,4 +248,6 @@ $gender_display = array("F" => "Female", "M" => "Male", "O" => "Other");
 	</td>
 </tr>
 </table>
-
+<?php
+mysqli_close($dbConn);
+?>

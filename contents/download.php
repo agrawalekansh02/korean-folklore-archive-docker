@@ -17,8 +17,11 @@ $id = $data[1];
 $dbConn = get_connection();
 
 $result = mysqli_query($dbConn, "select * from $table where ${table}_id=$id" . get_auth_sql());
+$row = mysqli_fetch_assoc($result);
 
-if (!($row = mysqli_fetch_assoc($result))){
+mysqli_close($dbConn);
+
+if (!$row){
     exit("Invalid $table");
 }
 
@@ -28,7 +31,6 @@ if ($table == 'consultant'){
     $boxFileId = $row['consultant_box_file_id'];
     $fileType = $row['consultant_file_type'];
     $fileName = $row['consultant_file_name'];
-	
 }
 else if ($table == 'data'){
     $boxFileId = $row['data_box_file_id'];

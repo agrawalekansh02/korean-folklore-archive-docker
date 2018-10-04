@@ -51,6 +51,7 @@ $query = "SELECT MIN(context_date) AS min_date, MAX(context_date) AS max_date "
 $rsc = mysqli_query($dbConn, $query) or die("SQL Error: ". mysqli_error());
 $result = mysqli_fetch_assoc($rsc);
 
+mysqli_close($dbConn);
 ?>
 <script type="text/javascript">
     var CONSTANTS = {

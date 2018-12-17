@@ -49,17 +49,6 @@ function get_file() {
 	$adminToken = $boxJwt->adminToken();
 	$boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
 
-	$res   = $boxClient->usersManager->getEnterpriseUsers(null, null);
-	$users = json_decode($res->getBody());
-
-	if (!$users->total_count) {
-	    echo "No users found for $userLogin.\n";
-	    return;
-	}
-
-	$user    = $users->entries[0];
-	$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
-
 	$user = get_user();
 	$data = false;
 	foreach ($_FILES as $name => $data) {
@@ -93,7 +82,7 @@ function get_file() {
 				$parentId = BoxConstants::BOX_ROOT_FOLDER_ID;
 
 				$fileRequest = new BoxFileRequest(['name' => $finalBoxName, 'parent' => ['id' => $parentId]]);
-				$res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath, $headers);
+				$res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath);
 				$uploadedFileObject = json_decode($res->getBody());
 
 				$data['boxid']   = $uploadedFileObject->entries[0]->id;
@@ -143,20 +132,9 @@ function delete_box_file($old_box_file_id){
 	$adminToken = $boxJwt->adminToken();
 	$boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
 
-	$res   = $boxClient->usersManager->getEnterpriseUsers(null, null);
-	$users = json_decode($res->getBody());
-
-	if (!$users->total_count) {
-	    echo "No users found for $userLogin.\n";
-	    return;
-	}
-
-	$user    = $users->entries[0];
-	$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
-
 	// delete file
 	try{
-		$res = $boxClient->filesManager->deleteFile($old_box_file_id, $headers);
+		$res = $boxClient->filesManager->deleteFile($old_box_file_id);
 	}
 	catch(Exception $e){
 		// do nothing

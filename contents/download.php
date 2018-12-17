@@ -25,7 +25,6 @@ if (!$row){
     exit("Invalid $table");
 }
 
-
 // To accommodate old data used file name
 if ($table == 'consultant'){
     $boxFileId = $row['consultant_box_file_id'];
@@ -43,19 +42,9 @@ $boxConfig  = $boxJwt->getBoxConfig();
 $adminToken = $boxJwt->adminToken();
 $boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
 
-$res   = $boxClient->usersManager->getEnterpriseUsers(null);
-$users = json_decode($res->getBody());
-
-if (!$users->total_count) {
-    return "No users found for $userLogin.\n";
-}
-
-$user    = $users->entries[0];
-$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
-
 
 // download file
-$res = $boxClient->filesManager->downloadFile($boxFileId, 'downloadedFile.txt', null, $headers);
+$res = $boxClient->filesManager->downloadFile($boxFileId, 'downloadedFile.txt', null);
 
 $downloadLink = $res->getHeader('Location')[0];
 

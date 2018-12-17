@@ -3,7 +3,7 @@
 <div id="menu">
 <ul class="menu">
 <li> <a href="">Home</a></li>
-<li> <a href="map">Search</a></li>
+<!--<li> <a href="map">Search</a></li> -->
 <?php if ($user->is_admin()) { ?>
 <li> <a href="admin">Admin</a></li>
 <li> <a href="passcode">Change Passcode</a></li>

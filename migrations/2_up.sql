@@ -35,7 +35,14 @@ MODIFY consultant_immigration_date varchar(50) DEFAULT NULL,
 MODIFY consultant_file_type varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL;
 
 UPDATE consultant SET consultant_dob = NULL WHERE consultant_dob = '0000-00-00';
+UPDATE consultant SET consultant_dob = CONCAT(YEAR(consultant_dob), '-01-', '01')  WHERE MONTH(consultant_dob) = '00' AND DAY(consultant_dob) = '00';
+UPDATE consultant SET consultant_dob = CONCAT(YEAR(consultant_dob), '-', MONTH(consultant_dob),'-01')  WHERE DAY(consultant_dob) = '00';
+UPDATE consultant SET consultant_dob = CONCAT(YEAR(consultant_dob), '-01-', DAY(consultant_dob))  WHERE MONTH(consultant_dob) = '00';
+
 UPDATE consultant SET consultant_immigration_date = NULL WHERE consultant_immigration_date = '0000-00-00';
+UPDATE consultant SET consultant_immigration_date = CONCAT(YEAR(consultant_immigration_date), '-01-', '01')  WHERE MONTH(consultant_immigration_date) = '00' AND DAY(consultant_immigration_date) = '00';
+UPDATE consultant SET consultant_immigration_date = CONCAT(YEAR(consultant_immigration_date), '-', MONTH(consultant_immigration_date),'-01')  WHERE DAY(consultant_immigration_date) = '00';
+UPDATE consultant SET consultant_immigration_date = CONCAT(YEAR(consultant_immigration_date), '-01-', DAY(consultant_immigration_date))  WHERE MONTH(consultant_immigration_date) = '00';
 
 ALTER TABLE consultant
 MODIFY consultant_dob date DEFAULT NULL,
@@ -51,6 +58,9 @@ ADD COLUMN context_date_created TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 MODIFY context_date varchar(50) DEFAULT NULL;
 
 UPDATE context SET context_date = NULL WHERE context_date = '0000-00-00';
+UPDATE context SET context_date = CONCAT(YEAR(context_date), '-01-', '01')  WHERE MONTH(context_date) = '00' AND DAY(context_date) = '00';
+UPDATE context SET context_date = CONCAT(YEAR(context_date), '-', MONTH(context_date),'-01')  WHERE DAY(context_date) = '00';
+UPDATE context SET context_date = CONCAT(YEAR(context_date), '-01-', DAY(context_date))  WHERE MONTH(context_date) = '00';
 
 ALTER TABLE context
 MODIFY context_date date DEFAULT NULL;
@@ -65,8 +75,6 @@ ADD COLUMN data_quarter_created int(11) DEFAULT NULL,
 ADD COLUMN data_date_created TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 MODIFY data_file_type varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
 MODIFY data_file varchar(50) DEFAULT NULL;
-
-
 
 /* Update table engines to allow for rollback, foreign keys, constraints, etc... */
 ALTER TABLE collector ENGINE=InnoDB;

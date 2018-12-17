@@ -17,9 +17,6 @@ $boxConfig  = $boxJwt->getBoxConfig();
 $adminToken = $boxJwt->adminToken();
 $boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
 
-$res   = $boxClient->usersManager->getEnterpriseUsers(null, null);
-$users = json_decode($res->getBody());
-
 //if run in cli
 if(php_sapi_name()==="cli") {
     $newline = "\n";
@@ -30,14 +27,6 @@ if(php_sapi_name()==="cli") {
 }
 $newline_double = $newline.$newline;
 
-
-if (!$users->total_count) {
-    echo "No users found for $userLogin.".$newline_double;
-    exit();
-}
-
-$user    = $users->entries[0];
-$headers = [BoxConstants::HEADER_KEY_AS_USER => $user->id];
 $boxFolderId = BoxConstants::BOX_ROOT_FOLDER_ID;
 $filePath = '../files/';
 
@@ -63,6 +52,38 @@ if (!$dbConn) {
     exit();
 }
 
+//update database tables first
+$updatedTables = false;
+if ($result = mysqli_query($dbConn,"SHOW TABLES LIKE 'report_history'")) {
+    if($result->num_rows == 1) {
+        $updatedTables = true;
+    }
+}
+
+//if they have not yet been updated
+if($updatedTables == false) {
+    $dbschema = file_get_contents('update.sql');
+    echo "Updating database tables...".$newline_double;
+
+    if (mysqli_multi_query($dbConn,$dbschema)) {
+        echo 'SUCCESS'.$newline_double;
+    }
+    else{
+        echo 'FAIL'.$newline_double;
+        exit();
+    }
+}
+
+mysqli_close($dbConn);
+$dbConn = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+echo "Searching for files to upload...".$newline_double;
+
+if (!$dbConn) {
+    printf("Can't connect to localhost. Error: %s\n", mysqli_connect_error());
+    exit();
+}
+
 $queryData = "SELECT 
                 data_id AS id, 
                 collector_id AS collector_id, 
@@ -79,6 +100,7 @@ $queryConsultant = "SELECT
 
 //Data Table Query
 $dataResult = mysqli_query($dbConn,$queryData);
+
 $dataRows = array();
 if ($dataResult) {
     while ($row = mysqli_fetch_assoc($dataResult)) {
@@ -217,7 +239,7 @@ echo $newline_double."Script complete.";
 
 function uploadFileToBox($row) {
 
-    global $boxFolderId, $boxClient, $filePath, $headers, $tab, $newline;
+    global $boxFolderId, $boxClient, $filePath, $tab, $newline;
 
     $dbId = $row['id'];
     $origFileName = $row['origFileName'];
@@ -236,7 +258,7 @@ function uploadFileToBox($row) {
     echo $tab . $origFileName . $tab . $fileBasename . $tab . $fileExt . $tab . $finalBoxName . $newline;
 
     $fileRequest = new BoxFileRequest(['name' => $finalBoxName, 'parent' => ['id' => $boxFolderId]]);
-    $res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath.$currentFileName, $headers);
+    $res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath.$currentFileName);
     $uploadedFileObject = json_decode($res->getBody());
 
     //get id from box
@@ -249,7 +271,7 @@ function uploadFileToBox($row) {
 
 function deleteRecentlyUploaded($allUploadedFiles){
     
-    global $boxFolderId, $boxClient, $headers, $tab, $newline, $newline_double;
+    global $boxFolderId, $boxClient, $tab, $newline, $newline_double;
     
     echo "Removing uploaded files...".$newline_double;
 
@@ -259,7 +281,7 @@ function deleteRecentlyUploaded($allUploadedFiles){
         $boxFileId = $file['box_id'];
         $boxFileName = $file['box_name'];
 
-        $res = $boxClient->filesManager->deleteFile($boxFileId, $headers);
+        $res = $boxClient->filesManager->deleteFile($boxFileId);
         $status = $res->getStatusCode();
 
         //204 = successful delete

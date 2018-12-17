@@ -1,4 +1,6 @@
 <?php
+header("Location: ../index.php"); /* Redirect browser */
+exit();
 
 array_map(function ($file) use ($cms) {
     $cms->css[] = "map_search/bower_components/jqueryui/themes/kfl-theme/$file.css";

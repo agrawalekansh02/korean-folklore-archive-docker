@@ -3,7 +3,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 include_once('lib.php');
 include_once('mini/cms.php');
 
-$cms->js[] = 'http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
+$cms->js[] = 'https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js';
 $cms->js[] = "https://code.jquery.com/ui/1.12.1/jquery-ui.js";
 $cms->js[] = "js/kfl.js";
 
@@ -45,9 +45,9 @@ if ($_SERVER['SERVER_NAME']=='localhost'){
 	</table>
 
 	<div id="footer">
-		<a href="http://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; <?php echo date("Y"); ?> UC Regents&nbsp;&nbsp;|&nbsp;&nbsp;
-		<a href="http://cdh.ucla.edu/ticket" target="_blank">Web Support</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-		<a href="http://bitbucket.org/uclacdh/kfl-map-search" target="_blank">Open Source Code</a>
+		<a href="https://www.universityofcalifornia.edu/">University of California</a> Copyright &copy; <?php echo date("Y"); ?> UC Regents&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="https://cdh.ucla.edu/ticket" target="_blank">Web Support</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+		<a href="https://bitbucket.org/uclacdh/kfl-map-search" target="_blank">Open Source Code</a>
 	</div>
 
 </div>

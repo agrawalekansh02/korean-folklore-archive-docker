@@ -16,6 +16,9 @@ $boxJwt     = new BoxJWTAuth();
 $boxConfig  = $boxJwt->getBoxConfig();
 $adminToken = $boxJwt->adminToken();
 $boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
+$boxFolderId = BoxConstants::BOX_ROOT_FOLDER_ID;
+
+$filePath = '../files/';
 
 //if run in cli
 if(php_sapi_name()==="cli") {
@@ -27,24 +30,7 @@ if(php_sapi_name()==="cli") {
 }
 $newline_double = $newline.$newline;
 
-$boxFolderId = BoxConstants::BOX_ROOT_FOLDER_ID;
-$filePath = '../files/';
-
-if(!file_exists($filePath)){
-    echo "File directory does not exist.".$newline.' Exiting script.';
-    exit();
-}
-
-echo "Migrating files from server to Box...".$newline_double;
-echo "Getting relevant files...".$newline_double;
-//Get all files from files folder
-$files = array_diff(scandir($filePath), array('.', '..'));
-
-$updateDatabase = array();
-$failedFiles = array();
-$dataCaseQuery = '';
-$consultantCaseQuery = '';
-$filesList = implode (", ", $files);
+echo "Begin migration...".$newline_double; 
 
 $dbConn = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 if (!$dbConn) {
@@ -62,7 +48,7 @@ if ($result = mysqli_query($dbConn,"SHOW TABLES LIKE 'report_history'")) {
 
 //if they have not yet been updated
 if($updatedTables == false) {
-    $dbschema = file_get_contents('update.sql');
+    $dbschema = file_get_contents('2_up.sql');
     echo "Updating database tables...".$newline_double;
 
     if (mysqli_multi_query($dbConn,$dbschema)) {
@@ -76,6 +62,21 @@ if($updatedTables == false) {
 
 mysqli_close($dbConn);
 $dbConn = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+if(!file_exists($filePath)){
+    echo "File directory does not exist.".$newline.' Exiting script.';
+    exit();
+}
+
+echo "Getting relevant files...".$newline_double;
+//Get all files from files folder
+$files = array_diff(scandir($filePath), array('.', '..'));
+
+$updateDatabase = array();
+$failedFiles = array();
+$dataCaseQuery = '';
+$consultantCaseQuery = '';
+$filesList = implode (", ", $files);
 
 echo "Searching for files to upload...".$newline_double;
 

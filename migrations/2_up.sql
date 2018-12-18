@@ -16,6 +16,9 @@ ALTER TABLE collector
 MODIFY collector_dob varchar(50) DEFAULT NULL;
 
 UPDATE collector SET collector_dob = NULL WHERE collector_dob = '0000-00-00';
+UPDATE collector SET collector_dob = CONCAT(YEAR(collector_dob), '-01-', '01')  WHERE MONTH(collector_dob) = '00' AND DAY(collector_dob) = '00';
+UPDATE collector SET collector_dob = CONCAT(YEAR(collector_dob), '-', MONTH(collector_dob),'-01')  WHERE DAY(collector_dob) = '00';
+UPDATE collector SET collector_dob = CONCAT(YEAR(collector_dob), '-01-', DAY(collector_dob))  WHERE MONTH(collector_dob) = '00';
 
 ALTER TABLE collector
 MODIFY collector_dob date DEFAULT NULL;

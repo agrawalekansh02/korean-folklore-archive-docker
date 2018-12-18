@@ -78,7 +78,7 @@ class MiniCMS {
 		$title = ($this->title) ? $this->title . ' - ' . $this->config['site_name'] : $this->config['site_name']; 
 		$js = ''; foreach($this->js as $t) $js .= "<script src='$t'></script>\n";
 		$css = ''; foreach($this->css as $t) $css .= "<link rel=\"stylesheet\" type=\"text/css\" href=\"$t\" media=\"screen,projection\" />\n";
-		$baseref = 'http://' . $_SERVER['HTTP_HOST'] . preg_replace('#/[^/]+$#','/',$_SERVER['SCRIPT_NAME']);
+		$baseref = 'https://' . $_SERVER['HTTP_HOST'] . preg_replace('#/[^/]+$#','/',$_SERVER['SCRIPT_NAME']);
 		$style = '';
 		if (count($this->style) > 0) {
 			$style = '<style type="text/css">' . "\n";

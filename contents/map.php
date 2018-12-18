@@ -44,7 +44,7 @@ array_map(function ($file) use ($cms) {
     'result_list/SummaryItem',
 ));
 
-$cms->js[] = 'http://maps.googleapis.com/maps/api/js?sensor=false';
+$cms->js[] = 'https://maps.googleapis.com/maps/api/js?sensor=false';
 
 $dbConn = get_connection();
 

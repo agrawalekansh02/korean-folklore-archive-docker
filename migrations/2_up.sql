@@ -32,7 +32,7 @@ ALTER TABLE consultant
 ADD COLUMN consultant_box_file_id bigint(20) DEFAULT NULL,
 ADD COLUMN consultant_quarter_created int(11) DEFAULT NULL,
 ADD COLUMN consultant_date_created TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-MODIFY consultant_consent_form varchar(50) DEFAULT NULL,
+MODIFY consultant_consent_form varchar(100) DEFAULT NULL,
 MODIFY consultant_dob varchar(50) DEFAULT NULL,
 MODIFY consultant_immigration_date varchar(50) DEFAULT NULL,
 MODIFY consultant_file_type varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL;
@@ -77,7 +77,7 @@ ADD COLUMN data_box_file_id bigint(20) DEFAULT NULL,
 ADD COLUMN data_quarter_created int(11) DEFAULT NULL,
 ADD COLUMN data_date_created TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 MODIFY data_file_type varchar(200) CHARACTER SET latin1 COLLATE latin1_general_ci DEFAULT NULL,
-MODIFY data_file varchar(50) DEFAULT NULL;
+MODIFY data_file varchar(100) DEFAULT NULL;
 
 /* Update table engines to allow for rollback, foreign keys, constraints, etc... */
 ALTER TABLE collector ENGINE=InnoDB;

@@ -19,7 +19,8 @@ $adminToken = $boxJwt->adminToken();
 $boxClient  = new BoxClient($boxConfig, $adminToken->access_token);
 $boxFolderId = '';
 
-$filePath = '../files/';
+$filePath = '../files2/';
+$prefix = 'file';
 
 //if run in cli
 if(php_sapi_name()==="cli") {
@@ -42,61 +43,20 @@ if (!$dbConn) {
     exit();
 }
 
-//update database tables first
-$updatedTables = false;
-if ($result = mysqli_query($dbConn,"SHOW TABLES LIKE 'report_history'")) {
-    if($result->num_rows == 1) {
-        $updatedTables = true;
-    }
-}
-
-//if they have not yet been updated
-if($updatedTables == false) {
-    $dbschema = file_get_contents('2_up.sql');
-    echo "Updating database tables...".$newline_double;
-
-    if (mysqli_multi_query($dbConn,$dbschema)) {
-        echo 'SUCCESS'.$newline_double;
-    }
-    else{
-        echo 'FAIL'.$newline_double;
-        exit();
-    }
-}
-
-mysqli_close($dbConn);
-$dbConn = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
-
-if(!file_exists($filePath)){
-    echo "File directory does not exist.".$newline.' Exiting script.';
-    exit();
-}
-
-echo "Getting relevant files...".$newline_double;
-//Get all files from files folder
-$files = array_diff(scandir($filePath), array('.', '..', '.DS_Store'));
-
-$updateDatabase = array();
 $failedFiles = array();
-$dataCaseQuery = '';
-$consultantCaseQuery = '';
-$filesList = implode (", ", $files);
 
-echo "Searching for files to upload...".$newline_double;
+//update database tables first
+echo "Getting relevant files from database...".$newline_double;
+//Get all files from files folder
 
-if (!$dbConn) {
-    printf("Can't connect to localhost. Error: %s\n", mysqli_connect_error());
-    exit();
-}
 
 $queryData = "SELECT 
-                data_id AS id, 
-                collector_id AS collector_id, 
-                data_file_name AS origFileName, 
+                data_id AS id,
+                collector_id AS collector_id,
+                data_file_name AS origFileName,
                 data_file_type AS fileType,
-                data_file AS currentFileName 
-            FROM data WHERE data_file in (".$filesList.")
-            AND data_box_file_id IS NULL";
+                data_file AS currentFileName
+                FROM data where data_box_file_id is null and data_file != 0 and data_file IS NOT NULL";
 
 $queryConsultant = "SELECT 
                     consultant_id AS id, 
@@ -105,19 +65,22 @@ $queryConsultant = "SELECT
                     consultant_file_type AS fileType,
                     consultant_consent_form AS currentFileName 
                 FROM consultant 
-                WHERE consultant_consent_form in (".$filesList.")
-                AND consultant_box_file_id IS NULL";
+                WHERE consultant_box_file_id IS NULL 
+                    AND consultant_consent_form != 0 
+                    AND consultant_consent_form IS NOT NULL";
 
 echo $queryData.$newline_double;
 echo $queryConsultant.$newline_double;
 
 //Data Table Query
 $dataResult = mysqli_query($dbConn,$queryData);
+$duplicateSearch = array();
 
 $dataRows = array();
 if ($dataResult) {
     while ($row = mysqli_fetch_assoc($dataResult)) {
-      $dataRows[] = $row;
+        $dataRows[] = $row;
+        $duplicateSearch[] = $row['currentFileName'];
     }
 }
 
@@ -127,6 +90,7 @@ $consultantRows = array();
 if ($consultantResult) {
     while ($row = mysqli_fetch_assoc($consultantResult)) {
       $consultantRows[] = $row;
+      $duplicateSearch[] = $row['currentFileName'];
     }
 }
 
@@ -135,41 +99,55 @@ if(empty($dataRows) && empty($consultantRows)){
     exit();
 }
 
-echo "Uploading files...".$newline;
-//Data Table
+echo "Forming and Uploading Files...".$newline;
+
+echo 'Data Count: '.count($dataRows).$newline_double;
+
 $updateDataTable = array();
 $dataBoxIdQuery = '';
 $dataBoxNameQuery = '';
+
 foreach ($dataRows as $row) {
 
-    //upload each file to box 
-    try {
-        //name and id to array to update database
-        $boxinfo = uploadFileToBox($row);
-        $updateDataTable[] = $boxinfo;
-        $dataBoxIdQuery .= " WHEN data_id = ".$row['id']." THEN ".$boxinfo['box_id'];
-        $dataBoxNameQuery .= " WHEN data_id = ".$row['id']." THEN '".addslashes($boxinfo['box_name'])."'";
-    } catch(Exception $e) {
-        $failedFiles[] = $row['currentFileName'];
-        echo $e.$newline;
+    $row['serverFileName'] = checkFileExists($row);
+
+    if($row['serverFileName']){
+        //upload each file to box 
+        try {
+            //name and id to array to update database
+            $boxinfo = uploadFileToBox($row);
+
+            $updateDataTable[] = $boxinfo;
+
+            $dataBoxIdQuery .= " WHEN data_id = ".$row['id']." THEN ".$boxinfo['box_id'];
+            $dataBoxNameQuery .= " WHEN data_id = ".$row['id']." THEN '".addslashes($boxinfo['box_name'])."'";
+
+        } catch(Exception $e) {
+            $failedFiles[] = $row['serverFileName'];
+            echo $e.$newline;
+        }
     }
 }
 
-//Consultant Table
+echo 'Consultant Count: '.count($consultantRows).$newline_double;
 $updateConsultantTable = array();
 $consultantBoxIdQuery = '';
 $consultantBoxNameQuery = '';
 foreach ($consultantRows as $row) {
-    //upload each file to box 
-    try {
-        //name and id to array to update database
-        $boxinfo = uploadFileToBox($row);
-        $updateConsultantTable[] = $boxinfo;
-        $consultantBoxIdQuery .= " WHEN consultant_id = ".$row['id']." THEN ".$boxinfo['box_id'];
-        $consultantBoxNameQuery .= " WHEN consultant_id = ".$row['id']." THEN '".addslashes($boxinfo['box_name'])."'";
-    } catch(Exception $e) {
-        $failedFiles[] = $row['currentFileName'];
-        echo $e.$newline;
+
+    $row['serverFileName'] = checkFileExists($row);
+
+    if($row['serverFileName']){
+        try {
+            //name and id to array to update database
+            $boxinfo = uploadFileToBox($row);
+            $updateConsultantTable[] = $boxinfo;
+            $consultantBoxIdQuery .= " WHEN consultant_id = ".$row['id']." THEN ".$boxinfo['box_id'];
+            $consultantBoxNameQuery .= " WHEN consultant_id = ".$row['id']." THEN '".addslashes($boxinfo['box_name'])."'";
+        } catch(Exception $e) {
+            $failedFiles[] = $row['serverFileName'];
+            echo $e.$newline;
+        }
     }
 }
 
@@ -218,23 +196,19 @@ if (count($updateConsultantTable) > 0 && $updated) {
     }
 }
 
-
 if ($updated) {
     mysqli_commit($dbConn);
 } else {
     echo 'Rolling back database update...'.$newline_double;
     mysqli_rollback($dbConn);
-    $allUploadedFiles = array_merge($updateDataTable, $updateConsultantTable);
-    deleteRecentlyUploaded($allUploadedFiles);
 }
 
 mysqli_close($dbConn);
     
-
 //Write failed files list to file
 if($updated && count($failedFiles) > 0) {
 
-    $failedFilesLog = 'failedfiles.txt';
+    $failedFilesLog = 'failedfiles_v2.txt';
 
     echo "Some files have failed to move to box...".$newline_double;
 
@@ -251,7 +225,7 @@ if($updated && count($failedFiles) > 0) {
         echo "List of files was unable to be written.".$newline.$tab; 
     }
 
-    echo implode($newline.$tab, $failedFiles);
+    echo implode($newline, $failedFiles);
 }
 
 echo $newline_double."Script complete.";
@@ -261,48 +235,46 @@ $seconds = (float)($executionEndTime - $executionStartTime);
 
 echo "<br>This script took $seconds seconds to execute.";
 
-function uploadFileToBox($row) {
 
-    global $boxFolderId, $boxClient, $filePath, $tab, $newline;
+function checkFileExists($row){
 
-    $dbId = $row['id'];
+    GLOBAL $prefix, $filePath;
+
+    $fileId = $row['currentFileName'];
     $origFileName = $row['origFileName'];
-    $currentFileName = $row['currentFileName'];
-    $fileType = $row['fileType'];
 
-    $info = pathinfo($origFileName);
-
-    $validFileType = array('m4a','jpg','wma','wav','docx','pdf','MP3','mp3','png','3gp','doc','mov','amr','JPG','zip','WMA','do','m4v','3ga','mp4','ppt','mpeg','mpg','MOV','caf','txt','avi','pages','jpeg','aifc','flv','PNG','rtf','wve','gif','mP3','HEIC','webarchive','BMP','PDF','aif','j','jp','bmp','html');
-
-    // get the filename without the extension
-    if(!isset($info['extension']) || !in_array($info['extension'], $validFileType)){
-        $fileExt = '';
-        $fileBasename = $origFileName;
+    $serverFile = $prefix.$fileId.$origFileName;
+    
+    if(file_exists($filePath.$serverFile)){
+        return $serverFile;
     }
     else{
-        $fileExt = '.'.$info['extension'];
-        $fileBasename = basename($origFileName,$fileExt);
+        return false;
     }
+}
 
-    //if cannot find extension from filename
-    if($fileExt == ''){
-        if($fileType == 'audio/mpeg'){
-            $fileExt = '.mpeg';
-        }
-        else if($fileType == 'application/vnd.openxmlformats-officedocument.word'){
-            $fileExt = '.doc';
-        }
-        else {
-            $fileExt = ''; //can be anytype of file
-        }
-    }
+function uploadFileToBox($row){
 
-    $finalBoxName = $fileBasename . '_' . $currentFileName . $fileExt;
+    global $duplicateSearch, $boxFolderId, $boxClient, $filePath, $tab, $newline;
 
-    echo $tab . $currentFileName . $tab . $origFileName . $tab . $fileBasename . $tab . $fileExt . $tab . $finalBoxName . $newline;
+    $dbId = $row['id'];
+    //$origFileName = $row['origFileName'];
+    $currentFileName = $row['currentFileName'];
+    //$fileType = $row['fileType'];
+    $serverFileName = $row['serverFileName'];
+    $boxFileName = $serverFileName;
 
-    $fileRequest = new BoxFileRequest(['name' => $finalBoxName, 'parent' => ['id' => $boxFolderId]]);
-    $res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath.$currentFileName);
+    
+    //if(count(array_keys($duplicateSearch, $currentFileName))>1){
+        $boxFileName = $dbId.'_'.$boxFileName;
+    //}
+
+    echo $boxFileName . $newline;
+
+    $fileRequest = new BoxFileRequest(['name' => $boxFileName, 'parent' => ['id' => $boxFolderId]]);
+    $res         = $boxClient->filesManager->uploadFile($fileRequest, $filePath.$serverFileName);
+
+    //var_dump($res);
     $uploadedFileObject = json_decode($res->getBody());
 
     //get id from box
@@ -331,7 +303,7 @@ function deleteRecentlyUploaded($allUploadedFiles){
 
         //204 = successful delete
         if($status != 204) { 
-            $ManuallyRemoveFromBox[] = $boxFileName;
+            $ManuallyRemoveFromBox[] = $boxFileId . '   '. $boxFileName;
         }
     }
     

@@ -18,6 +18,15 @@ else if ($_SERVER['SERVER_NAME']=='dev.kfolk.cdh.ucla.edu'){
     define('DB_PASSWORD', '');
     define('DB_NAME', '');
 }
+else if ($_SERVER['SERVER_NAME']=='dev2.kfolk.cdh.ucla.edu'){
+// if test
+    define('SECRET','');
+    define('HOST','https://dev2.kfolk.cdh.ucla.edu/');
+    define('DB_HOST', '');
+    define('DB_USERNAME', '');
+    define('DB_PASSWORD', '');
+    define('DB_NAME', '');
+}
 else if ($_SERVER['SERVER_NAME']=='kfolk.cdh.ucla.edu'){
 // if production
     define('SECRET','');

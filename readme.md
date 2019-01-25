@@ -41,8 +41,11 @@ This application uses a Box JWT PHP Library for file storage.
     * If this is the first time setting up KFL please run **migrations/initial_setup.sql** to setup the database.
 
 * **If you are upgrading ...**
-    * If you are upgrading from Version 1 to Version 2, please run the **migrations/2_up.sql** script to update the database.
-    * Then, run **migrations/2_up_migrate_files_to_box.php** script to move all existing files in /files off the server to Box.
+    * If you are upgrading from Version 1 to Version 2
+    * First, seperate the student files into two seperate folders. First folder will be the files that have a numeric name and no file extension. The second folder will be the files that begin with the word 'file' and have an extension.
+    * You will need to run the **migrations/2_up_migrate_files_to_box.php** script to update the database and move all existing files off the server to Box.
+    * But, before you do, update the **boxFolderId** and **FILEPATH** and **FILEPATH2** accordingly.
+    * You may also run migrations/2_up.sql first to update the database before migrating the files if you prefer (but the file migration script will do it as well).
 
 ## Other
 Please note: 

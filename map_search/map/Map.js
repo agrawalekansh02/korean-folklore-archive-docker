@@ -5,12 +5,10 @@ KFA.Map.Map = Backbone.View.extend({
     },
 
     render: function () {
-        var gsat = new OpenLayers.Layer.Google("Google Satellite", {
-            type: google.maps.MapTypeId.SATELLITE
-        });
+        var osm = new OpenLayers.Layer.OSM("Open StreetMap");
 
         this._map = new OpenLayers.Map(this.el, {
-            layers: [gsat]
+            layers: [osm]
         });
 
         var center = new OpenLayers.LonLat(-118, 34)

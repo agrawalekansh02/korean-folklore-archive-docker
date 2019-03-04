@@ -44,8 +44,6 @@ array_map(function ($file) use ($cms) {
     'result_list/SummaryItem',
 ));
 
-$cms->js[] = 'https://maps.googleapis.com/maps/api/js?sensor=false';
-
 $dbConn = get_connection();
 
 $query = "SELECT MIN(context_date) AS min_date, MAX(context_date) AS max_date "
@@ -245,3 +243,4 @@ $(function () {
     root.render();
 });
 </script>
+

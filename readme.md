@@ -2,9 +2,11 @@
 
 ## Setup
 
-Simply clone the repository:
+If initiating the Docker container and KFL for the first time, run the following commands
 
-`git clone git@bitbucket.org:uclacdh/kfl-map-search.git`
+```sh
+
+```
 
 ### Box
 

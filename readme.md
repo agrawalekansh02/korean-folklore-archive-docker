@@ -2,10 +2,22 @@
 
 ## Setup
 
-If initiating the Docker container and KFL for the first time, run the following commands
+Make sure sure sql-tools is installed
 
 ```sh
+brew install msodbcsql mssql-tools
+```
 
+## Starting
+
+```sh
+docker-compose up
+```
+
+To run via php server run
+
+```sh
+php -S 127.0.0.1:8000
 ```
 
 ### Box

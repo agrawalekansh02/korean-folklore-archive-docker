@@ -4,19 +4,19 @@
 
 Make sure sure sql-tools is installed
 
-```sh
+```shell
 brew install msodbcsql mssql-tools
 ```
 
 ## Starting
 
-```sh
+```shell
 docker-compose up
 ```
 
 To run via php server run
 
-```sh
+```shell
 php -S 127.0.0.1:8000
 ```
 
